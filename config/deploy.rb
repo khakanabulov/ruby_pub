@@ -2,7 +2,7 @@
 
 lock '3.17.1'
 
-server ENV['SERVER'], port: 22, roles: %w(app db web), primary: true
+server 'femida-search.ru', port: 22, roles: %w(app db web), primary: true
 
 set :rbenv_ruby,      '3.0.5'
 set :application,     'araz_api'
