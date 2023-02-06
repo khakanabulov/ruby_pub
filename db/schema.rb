@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_03_20_140000) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_06_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,44 +22,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_20_140000) do
     t.datetime "updated_at", null: false
     t.index ["provider", "uid"], name: "index_authorizations_on_provider_and_uid"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
-  end
-
-  create_table "capabilities", force: :cascade do |t|
-    t.integer "device_id"
-    t.boolean "enabled"
-    t.boolean "retrievable"
-    t.string "capability_type"
-    t.string "state"
-    t.string "state_instance"
-    t.integer "state_value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "path"
-    t.integer "pin"
-    t.boolean "status"
-  end
-
-  create_table "device_types", force: :cascade do |t|
-    t.string "code"
-    t.string "name"
-  end
-
-  create_table "devices", force: :cascade do |t|
-    t.integer "user_id"
-    t.boolean "enabled"
-    t.string "name"
-    t.string "description"
-    t.string "room"
-    t.string "device_type"
-    t.string "manufacturer"
-    t.string "model"
-    t.string "hw_version"
-    t.string "sw_version"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "host"
-    t.integer "port"
-    t.integer "protocol_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -104,37 +66,34 @@ ActiveRecord::Schema[7.0].define(version: 2022_03_20_140000) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "properties", force: :cascade do |t|
-    t.integer "device_id"
-    t.boolean "enabled"
-    t.boolean "retrievable"
-    t.boolean "reportable"
-    t.string "property_type"
-    t.string "parameters_instance"
-    t.string "parameters_value"
-    t.string "parameters_unit"
-    t.string "parameters_events"
+  create_table "sro", force: :cascade do |t|
+    t.integer "number"
+    t.string "full_name"
+    t.string "inn"
+    t.string "ogrn"
+    t.string "address"
+    t.string "website"
+    t.string "phone"
+    t.string "email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "props", force: :cascade do |t|
-    t.integer "device_id"
-    t.boolean "enabled"
-    t.boolean "retrievable"
-    t.boolean "reportable"
-    t.string "prop_type"
-    t.string "parameters_instance"
-    t.string "parameters_unit"
-    t.string "state_instance"
-    t.integer "state_value"
+  create_table "sro_kinds", force: :cascade do |t|
+    t.integer "sro_id"
+    t.integer "sro_member_id"
+    t.string "kind"
+    t.date "start_date"
+    t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "protocols", force: :cascade do |t|
-    t.string "code"
-    t.string "name"
+  create_table "sro_members", force: :cascade do |t|
+    t.integer "sro_id"
+    t.string "full_name"
+    t.string "inn"
+    t.string "ogrn"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

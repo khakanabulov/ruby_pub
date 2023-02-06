@@ -1,0 +1,70 @@
+Layout/ExtraSpacing:
+  Exclude:
+    - 'Gemfile'
+
+Layout/FirstHashElementIndentation:
+  Exclude:
+    - 'app/controllers/callbacks_controller.rb'
+    - 'app/controllers/persons_controller.rb'
+    - 'app/models/user.rb'
+    - 'config/deploy.rb'
+
+Layout/HashAlignment:
+  Exclude:
+    - 'app/controllers/callbacks_controller.rb'
+    - 'app/helpers/application_helper.rb'
+    - 'config/environments/development.rb'
+    - 'config/environments/production.rb'
+
+Lint/EmptyFile:
+  Exclude:
+    - 'config/deploy/production.rb'
+
+Metrics/AbcSize:
+  Max: 161
+
+Metrics/BlockLength:
+  Max: 198
+
+Metrics/BlockNesting:
+  Max: 4
+
+Metrics/ClassLength:
+  Max: 283
+
+Metrics/CyclomaticComplexity:
+  Max: 31
+
+Metrics/MethodLength:
+  Max: 80
+
+Metrics/PerceivedComplexity:
+  Max: 29
+
+Style/Documentation:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Exclude:
+    - 'app/controllers/users_controller.rb'
+    - 'bin/bundle'
+
+Style/SymbolArray:
+  EnforcedStyle: percent
+  MinSize: 6
+
+Style/WordArray:
+  EnforcedStyle: percent
+  MinSize: 5
+
+Layout/LineLength:
+  Max: 198
+
+Style/GuardClause:
+  Exclude:
+    - 'app/models/user.rb'
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: nested
+  Exclude:
+    - 'config/application.rb'
