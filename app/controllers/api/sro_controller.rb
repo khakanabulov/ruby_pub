@@ -5,6 +5,7 @@ class Api::SroController < ApplicationController
 
   api :GET, '/sro/:inn', 'Единый реестр саморегулируемых организаций в сфере финансового рынка'
   def index
+    time = Time.current
     workbook = Roo::Spreadsheet.open(load_file)
     workbook.sheets.each do |worksheet|
       workbook.sheet(worksheet).each_row_streaming do |row|
@@ -32,7 +33,7 @@ class Api::SroController < ApplicationController
         end
       end
     end
-    render status: :ok, json: { sro: Sro.count, members: SroMember.count, kind: SroKind.count }
+    render status: :ok, json: { sro: Sro.count, members: SroMember.count, kind: SroKind.count, time: Time.current - time }
   end
 
   private
