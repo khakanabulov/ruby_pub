@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     resources :egrul,   only: :show
     resources :arbitr,  only: :show
     resources :npd,     only: :show
+    resources :bankrot, only: :show
     resources :sro,     only: :index
   end
 end
