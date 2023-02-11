@@ -8,7 +8,7 @@ class Api::DriverController < ApplicationController
     capcha = JSON.parse RestClient.get('https://check.gibdd.ru/captcha')
     rucaptcha = RestClient.post(
       'http://rucaptcha.com/in.php',
-      { key: KEY, body: capcha['base64jpg'], method: 'base64' }
+      { key: ENV['RUCAPTCHA_KEY'], body: capcha['base64jpg'], method: 'base64' }
     )
     id = rucaptcha.body.split('|').last
     sleep 7.seconds
