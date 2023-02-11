@@ -3,7 +3,7 @@
 class Api::SroController < ApplicationController
   protect_from_forgery with: :null_session
 
-  api :GET, '/sro/:inn', 'Единый реестр саморегулируемых организаций в сфере финансового рынка'
+  api :GET, '/sro', 'Единый реестр саморегулируемых организаций в сфере финансового рынка'
   def index
     time = Time.current
     workbook = Roo::Spreadsheet.open(load_file)
