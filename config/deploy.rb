@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-lock '3.17.1'
+lock '3.17.2'
 
 server '80.68.7.92', port: 22, roles: %w(app db web), primary: true
 
