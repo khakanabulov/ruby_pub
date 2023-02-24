@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_06_080000) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_24_130006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,36 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_06_080000) do
     t.datetime "updated_at", null: false
     t.index ["provider", "uid"], name: "index_authorizations_on_provider_and_uid"
     t.index ["user_id"], name: "index_authorizations_on_user_id"
+  end
+
+  create_table "black_list", force: :cascade do |t|
+    t.string "last_name"
+    t.string "first_name"
+    t.string "patronymic"
+    t.string "birthday"
+  end
+
+  create_table "clients", id: false, force: :cascade do |t|
+    t.uuid "id"
+    t.string "login"
+    t.string "password"
+    t.string "description"
+    t.string "jwt_token"
+    t.integer "request_count"
+    t.string "config"
+  end
+
+  create_table "expired_passports", force: :cascade do |t|
+    t.string "passp_series"
+    t.string "passp_number"
+  end
+
+  create_table "fssp_wanted", force: :cascade do |t|
+    t.string "last_name"
+    t.string "first_name"
+    t.string "patronymic"
+    t.string "birthday"
+    t.string "region_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -98,6 +128,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_06_080000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "terrorist_list", force: :cascade do |t|
+    t.string "last_name"
+    t.string "first_name"
+    t.string "middlename"
+    t.string "date_of_birth"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "uid"
     t.string "name"
@@ -117,6 +154,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_06_080000) do
     t.inet "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users_massive_supervisors", force: :cascade do |t|
+    t.string "g1"
+    t.string "g2"
+    t.string "g3"
+    t.string "g4"
+    t.string "g5"
   end
 
   add_foreign_key "authorizations", "users"
