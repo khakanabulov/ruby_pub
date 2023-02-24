@@ -10,7 +10,7 @@ set :repo_url,        'git@github.com:khakanabulov/ruby_pub.git'
 set :linked_files,    fetch(:linked_files, []).push('config/cable.yml', 'config/database.yml', 'config/secrets.yml', 'config/master.key', 'config/credentials.yml.enc', '.env')
 set :linked_dirs,     fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'tmp/session_store', 'vendor/bundle', 'public/system', 'public/uploads')
 set :keep_releases,   5
-set :user,            'deploy'
+set :user,            'support'
 set :use_sudo,        false
 set :stage,           :production
 set :deploy_to,       "/home/#{fetch(:user)}/#{fetch(:application)}"
