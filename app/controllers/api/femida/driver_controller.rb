@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::DriverController < ApplicationController
+class Api::Femida::DriverController < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/driver?', 'Проверка водителя'

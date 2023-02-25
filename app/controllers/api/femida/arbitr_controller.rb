@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::ArbitrController < ApplicationController
+class Api::Femida::ArbitrController < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/arbitr/:inn', 'Поиск решений арбитражного суда - json: { link: , num: , judge: , title: , name: , dt: } (https://kad.arbitr.ru/Kad/SearchInstances)'

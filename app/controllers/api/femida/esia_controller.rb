@@ -1,17 +1,16 @@
 # frozen_string_literal: true
 
-class Api::EsiaController < ApplicationController
+class Api::Femida::EsiaController < ApplicationController
   protect_from_forgery with: :null_session
 
   HOST = 'https://esia.gosuslugi.ru'
   PATH = 'api/public/v2'
-  RETRY = 30
 
-  api :GET, '/esia?phone=1234567890 /esia?email=a@a.a', 'Проверка ЕСИА'
+  api :GET, '/esia?phone=79991112233&passport=1234567890 /esia?email=a@a.a&inn=111222333444', 'Проверка ЕСИА'
   def index
-    type = JSON.parse RestClient.get("#{HOST}/captcha/#{PATH}/type")
+    type = get("/captcha/#{PATH}/type")
     headers = { captchaSession: type['captchaSession'] }
-    capcha = RestClient.get("#{HOST}/captcha/#{PATH}/image", headers)
+    capcha = get("/captcha/#{PATH}/image", headers, parse: false)
     resp = post_rucaptcha(Base64.encode64(capcha), phrase: 0, regsense: 0, numeric: 0, language: 1)
     headers2 = { 'Content-Type' => 'application/json', 'captchaSession' => type['captchaSession'] }
     token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
@@ -21,7 +20,8 @@ class Api::EsiaController < ApplicationController
              else
                "eml=#{params[:email]}"
              end
-    json = JSON.parse RestClient.get("#{HOST}/esia-rs/#{PATH}/recovery/find?#{search}&verifyToken=#{token['verify_token']}")
+    sleep 1
+    json = get("/esia-rs/#{PATH}/recovery/find?#{search}&verifyToken=#{token['verify_token']}")
     document = if params[:passport]
                  "serNum=#{params[:passport]}"
                elsif params[:inn]
@@ -29,7 +29,15 @@ class Api::EsiaController < ApplicationController
                elsif params[:snils]
                  "snils=#{params[:snils]}"
                end
-    resp = JSON.parse RestClient.get("#{HOST}/esia-rs/#{PATH}/recovery/find?#{document}&requestId=#{json['requestId']}", headers2)
+    resp = get("/esia-rs/#{PATH}/recovery/find?#{document}&requestId=#{json['requestId']}", headers2)
     render status: :ok, json: resp
+  end
+
+  private
+
+  def get(path, headers = {}, parse: true)
+    puts path
+    resp = RestClient.get(HOST + path, headers)
+    parse ? JSON.parse(resp) : resp
   end
 end

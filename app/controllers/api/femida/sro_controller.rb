@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::SroController < ApplicationController
+class Api::Femida::SroController < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/sro', 'Единый реестр саморегулируемых организаций в сфере финансового рынка'

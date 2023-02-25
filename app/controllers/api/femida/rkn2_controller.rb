@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::Rkn2Controller < ApplicationController
+class Api::Femida::Rkn2Controller < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/rkn/:id', 'Реестр лицензий в области связи'

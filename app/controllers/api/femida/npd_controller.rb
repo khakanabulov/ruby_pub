@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::NpdController < ApplicationController
+class Api::Femida::NpdController < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/npd/:inn', 'Проверка самозанятого - json: {"status": boolean, "message": string} (https://npd.nalog.ru/check-status/)'

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  RETRY = 10
+  RETRY = 30
   URL = 'http://rucaptcha.com'
 
   private

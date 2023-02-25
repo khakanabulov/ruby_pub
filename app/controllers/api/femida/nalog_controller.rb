@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::NalogController < ApplicationController
+class Api::Femida::NalogController < ApplicationController
   protect_from_forgery with: :null_session
 
   api :GET, '/nalog/:inn', 'Проверка ФЛ на дисквалификацию, ограничение и ИП (https://pb.nalog.ru/search-proc.json)'

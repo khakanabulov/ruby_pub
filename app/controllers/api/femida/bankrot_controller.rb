@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::BankrotController < ApplicationController
+class Api::Femida::BankrotController < ApplicationController
   protect_from_forgery with: :null_session
 
   BHOST = 'https://bankrot.fedresurs.ru'
