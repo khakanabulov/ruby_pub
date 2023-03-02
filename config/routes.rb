@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       resources :driver,  only: :index
       resources :esia,    only: :index
       resources :sro,     only: :index
+      resources :whoosh,  only: :index
     end
   end
 end
