@@ -14,40 +14,34 @@ class Api::Femida::EsiaController < ApplicationController
     resp = post_rucaptcha(Base64.encode64(capcha), phrase: 0, regsense: 0, numeric: 0, language: 1)
     headers2 = { 'Content-Type' => 'application/json', 'captchaSession' => type['captchaSession'] }
     token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
-    search = if params[:phone]
-               phone = params[:phone].last(10)
-               "mbt=+7(#{phone[0..2]})#{phone.last(7)}"
-             elsif params[:email]
-               "eml=#{params[:email]}"
-             elsif params[:passport]
-               "serNum=#{params[:passport]}"
-             elsif params[:inn]
-               "inn=#{params[:inn]}"
-             elsif params[:snils]
-               "snils=#{params[:snils]}"
-             end
     sleep 1
-    json = {}
-    json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{search}&verifyToken=#{token['verify_token']}")) if search
-    document = if params[:passport]
-                 "serNum=#{params[:passport]}"
-               elsif params[:inn]
-                 "inn=#{params[:inn]}"
-               elsif params[:snils]
-                 "snils=#{params[:snils]}"
-               end
-    json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{document}&requestId=#{json['requestId']}", headers2)) if document
+    json = { search_params: search_params }
+    json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{search_params}&verifyToken=#{token['verify_token']}"))
+    json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{search_params}&requestId=#{json['requestId']}", headers2))
     render status: :ok, json: json
   end
 
   private
+
+  def search_params
+    %i[phone email passport inn snils].map { |key| hash[key] if params[key].present? }.compact.join("&")
+  end
+
+  def hash
+    {
+      phone:    "mbt=+7(#{params[:phone].last(10)[0..2]})#{params[:phone].last(10).last(7)}",
+      email:       "eml=#{params[:email]}",
+      passport: "serNum=#{params[:passport]}",
+      inn:         "inn=#{params[:inn]}",
+      snils:     "snils=#{params[:snils]}"
+    }
+  end
 
   def get(path, headers = {}, parse: true)
     puts path
     resp = RestClient.get(HOST + path, headers)
     parse ? JSON.parse(resp) : resp
   rescue RestClient::NotFound, RestClient::BadRequest => e
-    errors = { 400 => 'passport or snils or inn not found', 404 => 'user not found' }
-    { error: errors[e.http_code] }
+    { error: 'not found' }
   end
 end
