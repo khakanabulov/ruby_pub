@@ -6,7 +6,7 @@ class Api::Femida::EsiaController < ApplicationController
   HOST = 'https://esia.gosuslugi.ru'
   PATH = 'api/public/v2'
 
-  api :GET, "/esia?phone=79991112233&passport=1234567890 \n/esia?email=a@a.a&inn=111222333444 \n/esia?email=a@a.a&snils=111222333444", 'Проверка ЕСИА'
+  api :GET, "/esia?phone=79991112233&passport=1234567890&email=mail@example.com&inn=111222333444&snils=111222333444&inn=111222333444", 'Проверка ЕСИА'
   def index
     type = get("/captcha/#{PATH}/type")
     headers = { captchaSession: type['captchaSession'] }
@@ -15,7 +15,7 @@ class Api::Femida::EsiaController < ApplicationController
     headers2 = { 'Content-Type' => 'application/json', 'captchaSession' => type['captchaSession'] }
     token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
     sleep 1
-    json = { search_params: search_params }
+    json = { params: search_params.split("&") }
     json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{search_params}&verifyToken=#{token['verify_token']}"))
     json.merge!(get("/esia-rs/#{PATH}/recovery/find?#{search_params}&requestId=#{json['requestId']}", headers2))
     render status: :ok, json: json

@@ -17,7 +17,6 @@ Rails.application.routes.draw do
       resources :npd,     only: :show
       resources :bankrot, only: :show
       resources :rkn,     only: :show
-      resources :fsrar,   only: :show
       resources :driver,  only: :index
       resources :esia,    only: :index
       resources :sro,     only: :index

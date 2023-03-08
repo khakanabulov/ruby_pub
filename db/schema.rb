@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_24_130006) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_08_000006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,6 +94,78 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_24_130006) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "rkn2", force: :cascade do |t|
+    t.string "name"
+    t.string "ownership"
+    t.string "name_short"
+    t.string "addr_legal"
+    t.string "licence_num"
+    t.string "lic_status_name"
+    t.string "service_name"
+    t.string "territory"
+    t.string "registration"
+    t.date "date_start"
+    t.date "date_end"
+  end
+
+  create_table "rkn3", force: :cascade do |t|
+    t.string "name"
+    t.string "rus_name"
+    t.string "reg_number"
+    t.string "status_comment"
+    t.string "langs"
+    t.string "form_spread"
+    t.string "territory"
+    t.string "territory_ids"
+    t.string "staff_address"
+    t.string "domain_name"
+    t.string "founders"
+    t.integer "reg_number_id"
+    t.integer "status_id"
+    t.integer "form_spread_id"
+    t.date "reg_date"
+    t.date "annulled_date"
+    t.date "suspension_date"
+    t.date "termination_date"
+  end
+
+  create_table "rkn5", force: :cascade do |t|
+    t.string "regno"
+    t.string "org_name"
+    t.string "short_org_name"
+    t.string "location"
+    t.string "license_num"
+    t.string "geo_zone"
+    t.string "order_num"
+    t.string "cancellation_num"
+    t.date "order_date"
+    t.date "cancellation_date"
+  end
+
+  create_table "rkn6", force: :cascade do |t|
+    t.string "pd_operator_num"
+    t.date "enter_date"
+    t.string "enter_order"
+    t.string "status"
+    t.string "name_full"
+    t.string "inn"
+    t.string "address"
+    t.date "income_date"
+    t.string "territory"
+    t.string "purpose_txt"
+    t.string "basis"
+    t.string "rf_subjects"
+    t.string "encryption"
+    t.string "transgran"
+    t.string "db_country"
+    t.string "is_list"
+    t.string "resp_name"
+    t.date "startdate"
+    t.string "stop_condition"
+    t.string "enter_order_num"
+    t.date "enter_order_date"
   end
 
   create_table "sro", force: :cascade do |t|

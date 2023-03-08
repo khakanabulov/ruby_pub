@@ -371,6 +371,7 @@ DEPENDENCIES
   rest-client
   roo
   rubocop
+  rubyzip
   slim-rails
   stimulus-rails
   turbo-rails
