@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_000006) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_10_000026) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,6 +96,55 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_000006) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
+  create_table "rkn10", force: :cascade do |t|
+    t.string "Num"
+    t.date "Date"
+    t.string "Owner"
+    t.string "Place"
+    t.string "Type"
+    t.string "DateFrom"
+    t.string "DateTo"
+    t.string "SuspensionInfo"
+    t.string "RenewalInfo"
+    t.string "AnnulledInfo"
+  end
+
+  create_table "rkn13", force: :cascade do |t|
+    t.string "plan_year"
+    t.string "org_name"
+    t.string "address"
+    t.string "address_activity"
+    t.string "ogrn"
+    t.string "inn"
+    t.date "date_reg"
+    t.date "date_last"
+    t.string "goal"
+    t.date "date_start"
+    t.string "work_day_cnt"
+    t.string "control_form"
+    t.string "orgs"
+  end
+
+  create_table "rkn14", force: :cascade do |t|
+    t.string "rowNumber"
+    t.string "name"
+    t.string "measure"
+    t.string "okei"
+    t.string "totalSum"
+  end
+
+  create_table "rkn18", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "education"
+    t.string "degree"
+    t.string "expertiseSubject"
+    t.date "accreditationDate"
+    t.string "orderNum"
+    t.string "validity"
+    t.string "status"
+  end
+
   create_table "rkn2", force: :cascade do |t|
     t.string "name"
     t.string "ownership"
@@ -108,6 +157,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_000006) do
     t.string "registration"
     t.date "date_start"
     t.date "date_end"
+  end
+
+  create_table "rkn20", force: :cascade do |t|
+    t.string "entryNum"
+    t.date "entryDate"
+    t.string "distributorName"
+    t.string "distributorOGRN"
+    t.string "distributorINN"
+    t.string "distributorLegalAddress"
+    t.string "distributorEmail"
+    t.string "distributorPersons"
+    t.string "services"
+  end
+
+  create_table "rkn26", force: :cascade do |t|
+    t.string "entryNum"
+    t.date "entryDate"
+    t.string "serviceName"
+    t.string "owner"
   end
 
   create_table "rkn3", force: :cascade do |t|
