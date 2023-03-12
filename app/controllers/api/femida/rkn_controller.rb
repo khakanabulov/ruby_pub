@@ -31,7 +31,7 @@ class Api::Femida::RknController < ApplicationController
         Rkn.create(number: key, status: :new, filename: filename)
       end
     end
-    render status: :ok, json: Rkn.where(deleted_at: nil).all.to_json
+    @rkn = Rkn.where(deleted_at: nil).all
   end
 
   api :GET, '/rkn/:id', 'Роскомнадзор'

@@ -45,8 +45,8 @@ hr.content-divider {
     height: 5px;
 }
 
-#parallax-computers {
-    background: url(https://source.unsplash.com/featured/?computers);
+#parallax-law {
+    background: url(https://source.unsplash.com/featured/?law);
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -54,7 +54,7 @@ hr.content-divider {
     border-top: 10px solid hotpink;
 }
 
-#parallax-computers hr {
+#parallax-law hr {
     background: hotpink;
 }
 

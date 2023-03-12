@@ -46,7 +46,7 @@ Rails.application.configure do
   # config.action_cable.mount_path = nil
   # config.action_cable.url = "wss://example.com/cable"
   # config.action_cable.allowed_request_origins = [ "http://example.com", /http:\/\/example.*/ ]
-  config.action_cable.url = 'wss://araz_api.ru/cable'
+  config.action_cable.url = 'wss://femida-search.online/cable'
   config.action_cable.allowed_request_origins = ['*']
   config.action_cable.disable_request_forgery_protection = true
 
@@ -107,5 +107,5 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  routes.default_url_options = { host: 'araz_api.ru', protocol: 'https' }
+  routes.default_url_options = { host: 'femida-search.online', protocol: 'https' }
 end

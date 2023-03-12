@@ -1,0 +1,28 @@
+.hero-body
+  .container.has-text-centered
+    .columns
+      .column.is-2
+      .column.is-8
+        h2.subtitle Список БД РКН
+    .columns
+      .column.is-12
+        table.table.is-fullwidth.is-striped
+          thead
+            th № БД
+            th Статус
+            th Кол-во записей
+            th Формат
+            th Создан
+            th Обновлен
+            th
+          tbody
+            - @rkn.each do |rkn|
+              tr
+                td = rkn.number
+                td = rkn.status
+                td = rkn.rows
+                td = rkn.filename.split('.').last
+                td = rkn.created_at.strftime("%d.%m.%Y %H:%M")
+                td = rkn.updated_at.strftime("%d.%m.%Y %H:%M")
+                td.level-right
+                  = link_to 'Обновить', '#', class: 'button is-small is-link'
