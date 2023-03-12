@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :arbitr,  only: :show
       resources :npd,     only: :show
       resources :bankrot, only: :show
-      resources :rkn,     only: :show
+      resources :rkn,     only: [:index, :show]
       resources :driver,  only: :index
       resources :esia,    only: :index
       resources :sro,     only: :index

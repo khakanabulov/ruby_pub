@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_10_000026) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_12_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -94,6 +94,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_10_000026) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "rkn", force: :cascade do |t|
+    t.string "number"
+    t.string "status"
+    t.string "rows"
+    t.string "filename"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
   end
 
   create_table "rkn10", force: :cascade do |t|
