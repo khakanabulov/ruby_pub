@@ -98,7 +98,6 @@ class Api::Femida::RknController < ApplicationController
         hash[name] = ch.text.chomp if @rkn.attribute_names.include?(name)
       end
       array << hash
-      byebug
       if array.size == SIZE
         insert(array)
         array = []
