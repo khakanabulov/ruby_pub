@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_12_000000) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_13_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -244,6 +244,34 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_12_000000) do
     t.string "stop_condition"
     t.string "enter_order_num"
     t.date "enter_order_date"
+  end
+
+  create_table "rknfsrar", force: :cascade do |t|
+    t.string "name"
+    t.string "inn"
+    t.string "kpp"
+    t.string "address_1"
+    t.string "email"
+    t.string "address_2"
+    t.string "kpp_2"
+    t.string "region_code"
+    t.string "region_code_2"
+    t.string "kind"
+    t.string "license_num"
+    t.string "license_from"
+    t.string "license_to"
+    t.string "reestr_num"
+    t.string "license_info"
+    t.string "license_info_updated_date"
+    t.string "license_info_basis"
+    t.string "license_info_history"
+    t.string "doc_num"
+    t.string "license_organ"
+    t.string "coords"
+    t.string "service_date"
+    t.string "service_info"
+    t.string "product_type"
+    t.string "change_date"
   end
 
   create_table "sro", force: :cascade do |t|

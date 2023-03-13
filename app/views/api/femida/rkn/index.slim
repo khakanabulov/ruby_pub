@@ -25,4 +25,4 @@
                 td = rkn.created_at.strftime("%d.%m.%Y %H:%M")
                 td = rkn.updated_at.strftime("%d.%m.%Y %H:%M")
                 td.level-right
-                  = link_to 'Обновить', '#', class: 'button is-small is-link'
+                  = link_to 'Обновить', api_femida_rkn_path(rkn.number), class: 'button is-small is-link'

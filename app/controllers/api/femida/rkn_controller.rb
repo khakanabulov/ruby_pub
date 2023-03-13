@@ -5,6 +5,7 @@ class Api::Femida::RknController < ApplicationController
 
   SIZE = 30_000
   URL = 'https://rkn.gov.ru/opendata/7705846236-'
+  URL2 = 'https://fsrar.gov.ru/opendata/7710747640-'
   URLS = {
     '2' => 'LicComm',
     '3' => 'ResolutionSMI',
@@ -15,14 +16,15 @@ class Api::Femida::RknController < ApplicationController
     '14' => 'AuditsResults',
     '18' => 'AccreditedExpertsMassCommunications',
     '20' => 'InformationDistributor',
-    '26' => 'NewsAgregator'
+    '26' => 'NewsAgregator',
+    'fsrar' => 'reestr'
   }.freeze
 
   api :GET, '/rkn', 'Роскомнадзор'
   def index
     URLS.each do |key, value|
-      url = URL + value
-      filename = get_filename(url)
+      url = (key == 'fsrar' ? URL2 : URL) + value
+      filename = get_filename(key, url)
 
       rkn = Rkn.find_by(number: key, deleted_at: nil)
       if rkn && rkn.filename == filename
@@ -42,11 +44,11 @@ class Api::Femida::RknController < ApplicationController
     time = Time.now
     @klass = "Rkn#{params[:id]}".constantize
     @rkn = @klass.new
-    url = URL + URLS[params[:id]]
+    url = (params[:id] == 'fsrar' ? URL2 : URL) + URLS[params[:id]]
     rkn = Rkn.find_by(number: params[:id], deleted_at: nil)
     render status: :ok, json: { status: :already_finished } and return if rkn.status == 'finished'
 
-    filename = rkn.filename || get_filename(url)
+    filename = rkn.filename || get_filename(params[:id], url)
     rkn.update(status: :started)
     case filename.split('.').last
     when 'xml'
@@ -55,7 +57,13 @@ class Api::Femida::RknController < ApplicationController
       path = Tempfile.new(['file', '.zip']).path
       File.binwrite(path, RestClient.get(url + '/' + filename))
       Zip::File.open(path) do |zip_file|
-        size = zip_file.sum { |entry| params[:id] == '6' ? parse_by_line(entry) : parse(entry) }
+        size = zip_file.sum do |entry|
+          case params[:id]
+          when '6' then parse_by_line(entry)
+          when 'fsrar' then parse_by_line(entry, 'row')
+          else parse(entry)
+          end
+      end
       end
     else
       size
@@ -67,9 +75,13 @@ class Api::Femida::RknController < ApplicationController
 
   private
 
-  def get_filename(url)
+  def get_filename(id, url)
     parsed_data = Nokogiri::HTML.parse(RestClient.get(url))
-    list = parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
+    list = if id == 'fsrar'
+      parsed_data.css('table.sticky-enabled tr')[1..].map { |x| { key: x.children[0].text, value: x.children[1].text } }
+    else
+      parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
+    end
     list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value]
   end
 
@@ -86,18 +98,15 @@ class Api::Femida::RknController < ApplicationController
     array.size
   end
 
-  def parse_by_line(entry)
+  def parse_by_line(entry, attr = 'rkn:record')
     array = []
     size = 0
-    entry.get_input_stream.each("</rkn:record>") do |raw_line|
-      record = "<rkn:record>" + raw_line.split("<rkn:record>").last.delete("\r\n\t")
+    entry.get_input_stream.each("</#{attr}>") do |raw_line|
+      record = "<#{attr}>" + raw_line.split("<#{attr}").last.delete("\r\n\t")
       hash = @rkn.attributes.to_h
       hash.delete('id')
-      Nokogiri::XML.parse(record).children[0].children.each do |ch|
-        name = ch.name.split(':').last
-        hash[name] = ch.text.chomp if @rkn.attribute_names.include?(name)
-      end
-      array << hash
+      attrs = Nokogiri::XML.parse(record).children[0].children
+      array << (attr == 'rkn:record' ? attrs_record(attrs, hash) : attrs_row(attrs, hash))
       if array.size == SIZE
         insert(array)
         array = []
@@ -105,6 +114,19 @@ class Api::Femida::RknController < ApplicationController
       end
     end
     size * SIZE + array.size
+  end
+
+  def attrs_record(attrs, hash)
+    attrs.each do |ch|
+      name = ch.name.split(':').last
+      hash[name] = ch.text.chomp if @rkn.attribute_names.include?(name)
+    end
+    hash
+  end
+
+  def attrs_row(attrs, hash)
+    @rkn.attribute_names[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1].text }
+    hash
   end
 
   def insert(array)
