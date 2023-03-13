@@ -30,6 +30,7 @@ class Api::Femida::RknController < ApplicationController
       if rkn && rkn.filename == filename
       else
         rkn.deleted_at = Time.current if rkn
+        rkn.save
         Rkn.create(number: key, status: :new, filename: filename)
       end
     end
@@ -82,7 +83,7 @@ class Api::Femida::RknController < ApplicationController
     else
       parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
     end
-    list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value]
+    list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value].split("/").last
   end
 
   def parse(entry, stream: true)
