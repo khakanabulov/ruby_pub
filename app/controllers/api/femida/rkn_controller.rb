@@ -33,7 +33,7 @@ class Api::Femida::RknController < ApplicationController
         Rkn.create(number: key, status: :new, filename: filename)
       end
     end
-    @rkn = Rkn.where(deleted_at: nil).all
+    @rkn = Rkn.where(deleted_at: nil).all.order(id: :desc)
   end
 
   api :GET, '/rkn/:id', 'Роскомнадзор'
@@ -125,7 +125,7 @@ class Api::Femida::RknController < ApplicationController
   end
 
   def attrs_row(attrs, hash)
-    @rkn.attribute_names[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1].text }
+    @rkn.attribute_names[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1]&.text }
     hash
   end
 
