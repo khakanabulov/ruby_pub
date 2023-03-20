@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_13_000000) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_19_002018) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -272,6 +272,83 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_13_000000) do
     t.string "service_info"
     t.string "product_type"
     t.string "change_date"
+  end
+
+  create_table "rknrosstat2012", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2013", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2014", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2015", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2016", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2017", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
+  end
+
+  create_table "rknrosstat2018", force: :cascade do |t|
+    t.string "name"
+    t.string "okpo"
+    t.string "okopf"
+    t.string "okfs"
+    t.string "okved"
+    t.string "inn"
+    t.string "measure"
+    t.string "type"
   end
 
   create_table "sro", force: :cascade do |t|

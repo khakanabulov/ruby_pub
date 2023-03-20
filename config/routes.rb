@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :esia,    only: :index
       resources :sro,     only: :index
       resources :whoosh,  only: :index
+      resources :websbor, only: :index
     end
   end
 end

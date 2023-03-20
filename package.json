@@ -9,10 +9,10 @@
     "cocoon-js": "^0.0.5",
     "esbuild": "^0.16.15",
     "esbuild-plugin-import-glob": "^0.1.1",
-    "esbuild-rails": "^1.0.3",
+    "esbuild-rails": "^1.0.4",
     "jquery": "^3.6.4",
     "jquery-ui": "^1.13.2",
-    "sass": "^1.59.2"
+    "sass": "^1.59.3"
   },
   "scripts": {
     "build": "node esbuild.config.js",
