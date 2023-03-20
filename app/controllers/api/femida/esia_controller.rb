@@ -14,20 +14,21 @@ class Api::Femida::EsiaController < ApplicationController
     resp = post_rucaptcha(Base64.encode64(capcha), phrase: 0, regsense: 0, numeric: 0, language: 1)
     headers2 = { 'Content-Type' => 'application/json', 'captchaSession' => type['captchaSession'] }
     token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
-    # sleep 1
     json = {}
     hash.each do |key, value|
       z1 = get("/esia-rs/#{PATH}/recovery/find?#{value}&verifyToken=#{token['verify_token']}", key: key)
-      puts z1
       json.merge!( key => (z1['description'] == "Найдена стандартная/подтвержденная УЗ" && z1['status'] == 2))
-      z2 = get("/esia-rs/#{PATH}/recovery/find?#{hash.values.join('&')}&requestId=#{z1['requestId']}", headers: headers2, key: key)
-      puts z2
-      json.merge!( "#{key}_2" => z2)
+      z2 = get("/esia-rs/#{PATH}/recovery/find?#{search_params}&requestId=#{z1['requestId']}", headers: headers2, key: key)
+      json.merge!( "#{key}_info" => z2)
     end
     render status: :ok, json: json
   end
 
   private
+
+  def search_params
+    %i[passport inn snils].map { |key| hash[key] if params[key].present? }.compact.join('&')
+  end
 
   def hash
     h = {}
