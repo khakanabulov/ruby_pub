@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       resources :sro,     only: :index
       resources :whoosh,  only: :index
       resources :websbor, only: :index
+      resources :bonalog, only: :index
     end
   end
 end
