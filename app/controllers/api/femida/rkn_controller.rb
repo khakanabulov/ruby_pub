@@ -45,7 +45,9 @@ class Api::Femida::RknController < ApplicationController
         Rkn.create(number: key, status: :new, filename: filename)
       end
     end
-    @rkn = Rkn.where(deleted_at: nil).all.order(id: :desc)
+    rkns = Rkn.all.order(id: :desc)
+    @rkn = rkns.select { |r| r.deleted_at.nil? }
+    @rkn_deleted = rkns.select { |r| r.deleted_at.present? }
   end
 
   api :GET, '/rkn/:id', 'Роскомнадзор'
@@ -85,7 +87,7 @@ class Api::Femida::RknController < ApplicationController
     else
       size
     end
-    rkn.update(status: :finished, rows: size)
+    rkn.update(status: :finished, rows: size, )
 
     render status: :ok, json: { time: (Time.now - time), size: size }
   end
