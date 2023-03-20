@@ -13,12 +13,14 @@ class Api::Femida::EsiaController < ApplicationController
     capcha = get("/captcha/#{PATH}/image", headers: headers, parse: false)
     resp = post_rucaptcha(Base64.encode64(capcha), phrase: 0, regsense: 0, numeric: 0, language: 1)
     headers2 = { 'Content-Type' => 'application/json', 'captchaSession' => type['captchaSession'] }
-    token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
     json = {}
+    req_id = nil
     hash.each do |key, value|
+      token = JSON.parse RestClient.post("#{HOST}/captcha/#{PATH}/verify", { captchaType: type['captchaType'], answer: resp.body.split('|').last }.to_json, headers2)
       z1 = get("/esia-rs/#{PATH}/recovery/find?#{value}&verifyToken=#{token['verify_token']}", key: key)
+      req_id ||= z1['requestId']
       json.merge!( key => (z1['description'] == "Найдена стандартная/подтвержденная УЗ" && z1['status'] == 2))
-      z2 = get("/esia-rs/#{PATH}/recovery/find?#{search_params}&requestId=#{z1['requestId']}", headers: headers2, key: key)
+      z2 = get("/esia-rs/#{PATH}/recovery/find?#{search_params}&requestId=#{req_id}", headers: headers2, key: key)
       json.merge!( "#{key}_info" => z2)
     end
     render status: :ok, json: json
