@@ -3,7 +3,7 @@
 class ApplicationController < ActionController::Base
   RETRY = 30
   URL = 'http://rucaptcha.com'
-
+  ERROR = 'ERROR_CAPTCHA_UNSOLVABLE'
   private
 
   def post_rucaptcha(body, attrs = {})
@@ -16,10 +16,10 @@ class ApplicationController < ActionController::Base
       x += 1
       resp = get_rucaptcha(id)
       puts "#{x}: #{resp.body}"
-      x = RETRY if resp.body == 'ERROR_CAPTCHA_UNSOLVABLE'
+      x = RETRY if resp.body == ERROR
       resp.body[0..1] == 'OK' ? (x = RETRY) : sleep(1.second)
     end
-    resp
+    resp.body
   end
 
   def get_rucaptcha(id)

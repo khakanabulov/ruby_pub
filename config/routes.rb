@@ -18,11 +18,19 @@ Rails.application.routes.draw do
       resources :bankrot, only: :show
       resources :rkn,     only: [:index, :show]
       resources :driver,  only: :index
-      resources :esia,    only: :index
       resources :sro,     only: :index
       resources :whoosh,  only: :index
       resources :websbor, only: :index
       resources :bonalog, only: :index
+      resources :esia,    only: :index do
+        collection do
+          get :passport
+          get :phone
+          get :email
+          get :inn
+          get :snils
+        end
+      end
     end
   end
 end
