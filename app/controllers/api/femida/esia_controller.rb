@@ -22,13 +22,13 @@ class Api::Femida::EsiaController < ApplicationController
     render status: :ok, json: json
   end
 
-  api :GET, "/esia/passport?str=111222333444", 'Проверка по номеру паспорта'
+  api :GET, "/esia/passport?str=1234567890", 'Проверка по номеру паспорта'
   def passport; get_esia; end
 
-  api :GET, "/esia/phone?str=111222333444", 'Проверка по номеру тел'
+  api :GET, "/esia/phone?str=79991112233", 'Проверка по номеру тел'
   def phone;    get_esia; end
 
-  api :GET, "/esia/email?str=111222333444", 'Проверка по email'
+  api :GET, "/esia/email?str=mail@example.com", 'Проверка по email'
   def email;    get_esia; end
 
   api :GET, "/esia/snils?str=111222333444", 'Проверка по СНИЛС'
