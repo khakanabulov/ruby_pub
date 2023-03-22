@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_19_002018) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -272,6 +272,45 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_19_002018) do
     t.string "service_info"
     t.string "product_type"
     t.string "change_date"
+  end
+
+  create_table "rknfssp6", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "actual_address"
+    t.string "number_proceeding"
+    t.string "date_proceeding"
+    t.string "total_number_proceedings"
+    t.string "doc_type"
+    t.string "doc_date"
+    t.string "doc_number"
+    t.string "docs_object"
+    t.string "execution_object"
+    t.string "amount_due"
+    t.string "debt"
+    t.string "departments"
+    t.string "departments_address"
+    t.string "debtor_tin"
+    t.string "tin_collector"
+  end
+
+  create_table "rknfssp7", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.string "actual_address"
+    t.string "number_proceeding"
+    t.string "date_proceeding"
+    t.string "total_number_proceedings"
+    t.string "doc_type"
+    t.string "doc_date"
+    t.string "doc_number"
+    t.string "docs_object"
+    t.string "execution_object"
+    t.string "complete_reason_date"
+    t.string "departments"
+    t.string "departments_address"
+    t.string "debtor_tin"
+    t.string "tin_collector"
   end
 
   create_table "rknrosstat2012", force: :cascade do |t|

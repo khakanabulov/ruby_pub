@@ -7,6 +7,7 @@ class Api::Femida::RknController < ApplicationController
   URL1 = 'https://rkn.gov.ru/opendata/7705846236-'
   URL2 = 'https://fsrar.gov.ru/opendata/7710747640-'
   URL3 = 'https://rosstat.gov.ru/opendata/7708234640-'
+  URL4 = 'https://opendata.fssp.gov.ru/7709576929-'
   URLS = {
     '2'           => 'LicComm',
     '3'           => 'ResolutionSMI',
@@ -26,6 +27,8 @@ class Api::Femida::RknController < ApplicationController
     'rosstat2014' => 'bdboo2014',
     'rosstat2013' => 'bdboo2013',
     'rosstat2012' => 'bdboo2012',
+    'fssp6'       => 'iplegallist',
+    'fssp7'       => 'iplegallistcomplete',
   }.freeze
 
   api :GET, '/rkn', 'Роскомнадзор'
@@ -70,7 +73,7 @@ class Api::Femida::RknController < ApplicationController
     when 'xml'
       size = parse(file, stream: false)
     when 'csv'
-      parse_csv_file(file)
+      parse_csv_file(file, stream: false)
     when 'zip'
       path = Tempfile.new(['file', '.zip']).path
       File.binwrite(path, file)
@@ -94,12 +97,23 @@ class Api::Femida::RknController < ApplicationController
 
   private
 
-  def parse_csv_file(file)
+  def parse_csv_file(file, stream: true)
     array = []
-    file.get_input_stream.each("\n") do |row|
-      z = row.force_encoding('windows-1251').chomp.split(';')
-      array << { name: z[0], okpo: z[1], okopf: z[2], okfs: z[3], okved: z[4], inn: z[5], measure: z[6], type: z[7] }
+    if stream
+      file.get_input_stream.each("\n") do |row|
+        z = row.force_encoding('windows-1251').chomp.split(';')
+        array << { name: z[0], okpo: z[1], okopf: z[2], okfs: z[3], okved: z[4], inn: z[5], measure: z[6], type: z[7] }
+      end
+    else
+      file.body.each_line do |row|
+        z = CSV.parse(row)[0]
+        hash = @rkn.attributes.to_h
+        hash.delete('id')
+        hash.keys.each_with_index { |name, index| hash[name] = z[index] }
+        array << hash
+      end
     end
+    array.shift
     insert(array)
     array.size
   end
@@ -115,9 +129,11 @@ class Api::Femida::RknController < ApplicationController
       parsed_data.css('table.sticky-enabled tr')[1..].map { |x| { key: x.children[0].text, value: x.children[1].text } }
     when /^rosstat/
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
+    when /^fssp/
+      parsed_data.css('table.b-table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } if x.children[5] }
     else
       parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
-    end
+    end.compact
     list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value].split("/").last
   end
 
@@ -171,9 +187,10 @@ class Api::Femida::RknController < ApplicationController
 
   def select_url(key)
     case key
-    when 'fsrar' then URL2
+    when 'fsrar'    then URL2
     when /^rosstat/ then URL3
-    else URL1
+    when /^fssp/    then URL4
+    else                 URL1
     end
   end
 end
