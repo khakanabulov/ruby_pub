@@ -73,7 +73,7 @@ class Api::Femida::RknController < ApplicationController
     when 'xml'
       size = parse(file, stream: false)
     when 'csv'
-      parse_csv_file(file, stream: false)
+      size = parse_csv_file(file, stream: false)
     when 'zip'
       path = Tempfile.new(['file', '.zip']).path
       File.binwrite(path, file)
@@ -90,7 +90,7 @@ class Api::Femida::RknController < ApplicationController
     else
       size
     end
-    rkn.update(status: :finished, rows: size, )
+    rkn.update(status: :finished, rows: size)
 
     render status: :ok, json: { time: (Time.now - time), size: size }
   end
