@@ -4,7 +4,7 @@ class CreateOpendataRkn5 < ActiveRecord::Migration[7.0]
   def change
     create_table :opendata_rkn5 do |t|
       t.string :regno
-      t.string :name
+      t.string :name, unique: true
       t.string :short_org_name
       t.string :location
       t.string :license_num

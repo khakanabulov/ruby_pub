@@ -5,7 +5,7 @@ class CreateOpendataRkn26 < ActiveRecord::Migration[7.0]
     create_table :opendata_rkn26 do |t|
       t.string :num
       t.string :date
-      t.string :name
+      t.string :name, unique: true
       t.string :owner
     end
   end

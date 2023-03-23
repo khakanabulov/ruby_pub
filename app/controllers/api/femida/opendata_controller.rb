@@ -31,7 +31,7 @@ class Api::Femida::OpendataController < ApplicationController
     'fssp7'       => 'iplegallistcomplete',
   }.freeze
 
-  api :GET, '/opendata', 'Роскомнадзор'
+  api :GET, '/opendata', 'opendata'
   def index
     URLS.each do |key, value|
       filename = get_filename(key, select_url(key) + value)
@@ -53,13 +53,13 @@ class Api::Femida::OpendataController < ApplicationController
     @opendata_deleted = opendatas.select { |r| r.deleted_at.present? }
   end
 
-  api :GET, '/opendata/:id', 'Роскомнадзор'
+  api :GET, '/opendata/:id', 'opendata'
   def show
     render status: :not_found, json: { status: :not_found } and return if URLS[params[:id]].nil?
 
     size = 0
     time = Time.now
-    @klass = "Opendata_#{params[:id]}".constantize
+    @klass = "Opendata::#{params[:id].capitalize}".constantize
     @opendata = @klass.new
     url = select_url(params[:id]) + URLS[params[:id]]
     opendata = Opendata.find_by(number: params[:id], deleted_at: nil)
@@ -80,9 +80,10 @@ class Api::Femida::OpendataController < ApplicationController
       Zip::File.open(path) do |zip_file|
         size = zip_file.sum do |entry|
           case params[:id]
-          when '6' then parse_by_line(entry)
-          when 'fsrar' then parse_by_line(entry, 'row')
+          when 'rkn6'     then parse_by_line(entry)
+          when 'fsrar'    then parse_by_line(entry, 'row')
           when /^rosstat/ then parse_csv_file(entry)
+          when /^rkn/     then parse(entry)
           else parse(entry)
           end
         end
@@ -131,8 +132,9 @@ class Api::Femida::OpendataController < ApplicationController
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
     when /^fssp/
       parsed_data.css('table.b-table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } if x.children[5] }
-    else
+    when /^rkn/
       parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
+    else
     end.compact
     list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value].split("/").last
   end
@@ -187,6 +189,7 @@ class Api::Femida::OpendataController < ApplicationController
 
   def select_url(key)
     case key
+    when /^rkn/     then URL1
     when 'fsrar'    then URL2
     when /^rosstat/ then URL3
     when /^fssp/    then URL4

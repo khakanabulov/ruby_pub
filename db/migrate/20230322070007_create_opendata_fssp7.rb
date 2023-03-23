@@ -3,7 +3,7 @@
 class CreateOpendataFssp7 < ActiveRecord::Migration[7.0]
   def change
     create_table :opendata_fssp7 do |t|
-      t.string :name
+      t.string :name, unique: true
       t.string :address
       t.string :actual_address
       t.string :number_proceeding
