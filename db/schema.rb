@@ -96,7 +96,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "rkn", force: :cascade do |t|
+  create_table "opendata", force: :cascade do |t|
     t.string "number"
     t.string "status"
     t.string "rows"
@@ -106,147 +106,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.datetime "deleted_at"
   end
 
-  create_table "rkn10", force: :cascade do |t|
-    t.string "Num"
-    t.date "Date"
-    t.string "Owner"
-    t.string "Place"
-    t.string "Type"
-    t.string "DateFrom"
-    t.string "DateTo"
-    t.string "SuspensionInfo"
-    t.string "RenewalInfo"
-    t.string "AnnulledInfo"
-  end
-
-  create_table "rkn13", force: :cascade do |t|
-    t.string "plan_year"
-    t.string "org_name"
-    t.string "address"
-    t.string "address_activity"
-    t.string "ogrn"
-    t.string "inn"
-    t.date "date_reg"
-    t.date "date_last"
-    t.string "goal"
-    t.date "date_start"
-    t.string "work_day_cnt"
-    t.string "control_form"
-    t.string "orgs"
-  end
-
-  create_table "rkn14", force: :cascade do |t|
-    t.string "rowNumber"
-    t.string "name"
-    t.string "measure"
-    t.string "okei"
-    t.string "totalSum"
-  end
-
-  create_table "rkn18", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "education"
-    t.string "degree"
-    t.string "expertiseSubject"
-    t.date "accreditationDate"
-    t.string "orderNum"
-    t.string "validity"
-    t.string "status"
-  end
-
-  create_table "rkn2", force: :cascade do |t|
-    t.string "name"
-    t.string "ownership"
-    t.string "name_short"
-    t.string "addr_legal"
-    t.string "licence_num"
-    t.string "lic_status_name"
-    t.string "service_name"
-    t.string "territory"
-    t.string "registration"
-    t.date "date_start"
-    t.date "date_end"
-  end
-
-  create_table "rkn20", force: :cascade do |t|
-    t.string "entryNum"
-    t.date "entryDate"
-    t.string "distributorName"
-    t.string "distributorOGRN"
-    t.string "distributorINN"
-    t.string "distributorLegalAddress"
-    t.string "distributorEmail"
-    t.string "distributorPersons"
-    t.string "services"
-  end
-
-  create_table "rkn26", force: :cascade do |t|
-    t.string "entryNum"
-    t.date "entryDate"
-    t.string "serviceName"
-    t.string "owner"
-  end
-
-  create_table "rkn3", force: :cascade do |t|
-    t.string "name"
-    t.string "rus_name"
-    t.string "reg_number"
-    t.string "status_comment"
-    t.string "langs"
-    t.string "form_spread"
-    t.string "territory"
-    t.string "territory_ids"
-    t.string "staff_address"
-    t.string "domain_name"
-    t.string "founders"
-    t.integer "reg_number_id"
-    t.integer "status_id"
-    t.integer "form_spread_id"
-    t.date "reg_date"
-    t.date "annulled_date"
-    t.date "suspension_date"
-    t.date "termination_date"
-  end
-
-  create_table "rkn5", force: :cascade do |t|
-    t.string "regno"
-    t.string "org_name"
-    t.string "short_org_name"
-    t.string "location"
-    t.string "license_num"
-    t.string "geo_zone"
-    t.string "order_num"
-    t.string "cancellation_num"
-    t.date "order_date"
-    t.date "cancellation_date"
-  end
-
-  create_table "rkn6", force: :cascade do |t|
-    t.string "pd_operator_num"
-    t.date "enter_date"
-    t.string "enter_order"
-    t.string "status"
-    t.string "name_full"
-    t.string "inn"
-    t.string "address"
-    t.date "income_date"
-    t.string "territory"
-    t.string "purpose_txt"
-    t.string "basis"
-    t.string "rf_subjects"
-    t.string "encryption"
-    t.string "transgran"
-    t.string "db_country"
-    t.string "is_list"
-    t.string "resp_name"
-    t.date "startdate"
-    t.string "stop_condition"
-    t.string "enter_order_num"
-    t.date "enter_order_date"
-  end
-
-  create_table "rknfsrar", force: :cascade do |t|
+  create_table "opendata_fsrar", force: :cascade do |t|
     t.string "name"
     t.string "inn"
     t.string "kpp"
@@ -274,7 +134,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "change_date"
   end
 
-  create_table "rknfssp6", force: :cascade do |t|
+  create_table "opendata_fssp6", force: :cascade do |t|
     t.string "name"
     t.string "address"
     t.string "actual_address"
@@ -294,7 +154,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "tin_collector"
   end
 
-  create_table "rknfssp7", force: :cascade do |t|
+  create_table "opendata_fssp7", force: :cascade do |t|
     t.string "name"
     t.string "address"
     t.string "actual_address"
@@ -313,7 +173,147 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "tin_collector"
   end
 
-  create_table "rknrosstat2012", force: :cascade do |t|
+  create_table "opendata_rkn10", force: :cascade do |t|
+    t.string "name"
+    t.string "date"
+    t.string "owner"
+    t.string "place"
+    t.string "type"
+    t.string "date_from"
+    t.string "date_to"
+    t.string "suspension_info"
+    t.string "renewal_info"
+    t.string "annulled_info"
+  end
+
+  create_table "opendata_rkn13", force: :cascade do |t|
+    t.string "plan_year"
+    t.string "name"
+    t.string "address"
+    t.string "address_activity"
+    t.string "ogrn"
+    t.string "inn"
+    t.string "date_reg"
+    t.string "date_last"
+    t.string "goal"
+    t.string "date_start"
+    t.string "work_day_cnt"
+    t.string "control_form"
+    t.string "orgs"
+  end
+
+  create_table "opendata_rkn14", force: :cascade do |t|
+    t.string "row_number"
+    t.string "name"
+    t.string "measure"
+    t.string "okei"
+    t.string "totalSum"
+  end
+
+  create_table "opendata_rkn18", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "education"
+    t.string "degree"
+    t.string "expertiseSubject"
+    t.string "accreditationDate"
+    t.string "orderNum"
+    t.string "validity"
+    t.string "status"
+  end
+
+  create_table "opendata_rkn2", force: :cascade do |t|
+    t.string "name"
+    t.string "ownership"
+    t.string "name_short"
+    t.string "addr_legal"
+    t.string "licence_num"
+    t.string "lic_status_name"
+    t.string "service_name"
+    t.string "territory"
+    t.string "registration"
+    t.string "date_start"
+    t.string "date_end"
+  end
+
+  create_table "opendata_rkn20", force: :cascade do |t|
+    t.string "entry_num"
+    t.string "entry_date"
+    t.string "name"
+    t.string "ogrn"
+    t.string "inn"
+    t.string "legal_address"
+    t.string "email"
+    t.string "persons"
+    t.string "services"
+  end
+
+  create_table "opendata_rkn26", force: :cascade do |t|
+    t.string "num"
+    t.string "date"
+    t.string "name"
+    t.string "owner"
+  end
+
+  create_table "opendata_rkn3", force: :cascade do |t|
+    t.string "name"
+    t.string "rus_name"
+    t.string "reg_number"
+    t.string "status_comment"
+    t.string "langs"
+    t.string "form_spread"
+    t.string "territory"
+    t.string "territory_ids"
+    t.string "staff_address"
+    t.string "domain_name"
+    t.string "founders"
+    t.string "reg_number_id"
+    t.string "status_id"
+    t.string "form_spread_id"
+    t.string "reg_date"
+    t.string "annulled_date"
+    t.string "suspension_date"
+    t.string "termination_date"
+  end
+
+  create_table "opendata_rkn5", force: :cascade do |t|
+    t.string "regno"
+    t.string "name"
+    t.string "short_org_name"
+    t.string "location"
+    t.string "license_num"
+    t.string "geo_zone"
+    t.string "order_num"
+    t.string "cancellation_num"
+    t.string "order_date"
+    t.string "cancellation_date"
+  end
+
+  create_table "opendata_rkn6", force: :cascade do |t|
+    t.string "pd_operator_num"
+    t.string "enter_date"
+    t.string "enter_order"
+    t.string "status"
+    t.string "name"
+    t.string "inn"
+    t.string "address"
+    t.string "income_date"
+    t.string "territory"
+    t.string "purpose_txt"
+    t.string "basis"
+    t.string "rf_subjects"
+    t.string "encryption"
+    t.string "transgran"
+    t.string "db_country"
+    t.string "is_list"
+    t.string "resp_name"
+    t.string "startdate"
+    t.string "stop_condition"
+    t.string "enter_order_num"
+    t.string "enter_order_date"
+  end
+
+  create_table "opendata_rosstat2012", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -324,7 +324,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2013", force: :cascade do |t|
+  create_table "opendata_rosstat2013", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -335,7 +335,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2014", force: :cascade do |t|
+  create_table "opendata_rosstat2014", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -346,7 +346,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2015", force: :cascade do |t|
+  create_table "opendata_rosstat2015", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -357,7 +357,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2016", force: :cascade do |t|
+  create_table "opendata_rosstat2016", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -368,7 +368,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2017", force: :cascade do |t|
+  create_table "opendata_rosstat2017", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
@@ -379,7 +379,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "type"
   end
 
-  create_table "rknrosstat2018", force: :cascade do |t|
+  create_table "opendata_rosstat2018", force: :cascade do |t|
     t.string "name"
     t.string "okpo"
     t.string "okopf"
