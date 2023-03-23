@@ -3,7 +3,7 @@
 class CreateOpendataRkn3 < ActiveRecord::Migration[7.0]
   def change
     create_table :opendata_rkn3 do |t|
-      t.string :name, unique: true
+      t.string :name
       t.string :rus_name
       t.string :reg_number
       t.string :status_comment

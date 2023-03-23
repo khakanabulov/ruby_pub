@@ -60,14 +60,15 @@ class Api::Femida::OpendataController < ApplicationController
     size = 0
     time = Time.now
     @klass = "Opendata::#{params[:id].capitalize}".constantize
-    @opendata = @klass.new
+    @opendata = @klass.new.attributes.to_h
+    @opendata.delete('id')
     url = select_url(params[:id]) + URLS[params[:id]]
     opendata = Opendata.find_by(number: params[:id], deleted_at: nil)
     render status: :ok, json: { status: :already_finished } and return if opendata.status == 'finished'
 
     filename = opendata.filename || get_filename(params[:id], url)
     opendata.update(status: :started)
-    # ActiveRecord::Base.connection.execute("TRUNCATE opendata_#{params[:id]}")
+    ActiveRecord::Base.connection.execute("TRUNCATE opendata_#{params[:id]}")
     file = get(url + '/' + filename)
     case filename.split('.').last
     when 'xml'
@@ -108,8 +109,7 @@ class Api::Femida::OpendataController < ApplicationController
     else
       file.body.each_line do |row|
         z = CSV.parse(row)[0]
-        hash = @opendata.attributes.to_h
-        hash.delete('id')
+        hash = @opendata
         hash.keys.each_with_index { |name, index| hash[name] = z[index] }
         array << hash
       end
@@ -143,9 +143,8 @@ class Api::Femida::OpendataController < ApplicationController
     array = []
     Nokogiri::XML.parse(stream ? entry.get_input_stream.read : entry)
                  .xpath("//rkn:register/rkn:#{params[:id] == '18' ? 'expert' : 'record'}").each do |x|
-      hash = @opendata.attributes.to_h
-      hash.delete('id')
-      x.children.each { |ch| hash[ch.name] = ch.text.chomp if @opendata.attribute_names.include?(ch.name) }
+      hash = @opendata
+      x.children.each { |ch| hash[ch.name] = ch.text.chomp if @opendata.keys.include?(ch.name) }
       array << hash
     end
     insert(array)
@@ -157,8 +156,7 @@ class Api::Femida::OpendataController < ApplicationController
     size = 0
     entry.get_input_stream.each("</#{attr}>") do |raw_line|
       record = "<#{attr}>" + raw_line.split("<#{attr}").last.delete("\r\n\t")
-      hash = @opendata.attributes.to_h
-      hash.delete('id')
+      hash = @opendata
       attrs = Nokogiri::XML.parse(record).children[0].children
       array << (attr == 'rkn:record' ? attrs_record(attrs, hash) : attrs_row(attrs, hash))
       if array.size == SIZE
@@ -173,18 +171,18 @@ class Api::Femida::OpendataController < ApplicationController
   def attrs_record(attrs, hash)
     attrs.each do |ch|
       name = ch.name.split(':').last
-      hash[name] = ch.text.chomp if @opendata.attribute_names.include?(name)
+      hash[name] = ch.text.chomp if @opendata.keys.include?(name)
     end
     hash
   end
 
   def attrs_row(attrs, hash)
-    @opendata.attribute_names[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1]&.text }
+    @opendata.keys[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1]&.text }
     hash
   end
 
   def insert(array)
-    array.each_slice(SIZE) { |slice| @klass.upsert_all(slice, unique_by: :name) }
+    array.each_slice(SIZE) { |slice| @klass.insert_all(slice) }
   end
 
   def select_url(key)
