@@ -3,16 +3,16 @@
 class CreateOpendataRkn10 < ActiveRecord::Migration[7.0]
   def change
     create_table :opendata_rkn10 do |t|
-      t.string :name
-      t.string :date
-      t.string :owner
-      t.string :place
-      t.string :type
-      t.string :date_from
-      t.string :date_to
-      t.string :suspension_info
-      t.string :renewal_info
-      t.string :annulled_info
+      t.string :Num
+      t.string :Date
+      t.string :Owner
+      t.string :Place
+      t.string :Type
+      t.string :DateFrom
+      t.string :DateTo
+      t.string :SuspensionInfo
+      t.string :RenewalInfo
+      t.string :AnnulledInfo
     end
   end
 end

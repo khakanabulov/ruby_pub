@@ -7,7 +7,7 @@ class CreateOpendataRkn6 < ActiveRecord::Migration[7.0]
       t.string :enter_date
       t.string :enter_order
       t.string :status
-      t.string :name
+      t.string :name_full
       t.string :inn
       t.string :address
       t.string :income_date
