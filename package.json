@@ -12,7 +12,7 @@
     "esbuild-rails": "^1.0.4",
     "jquery": "^3.6.4",
     "jquery-ui": "^1.13.2",
-    "sass": "^1.59.3"
+    "sass": "^1.60.0"
   },
   "scripts": {
     "build": "node esbuild.config.js",
