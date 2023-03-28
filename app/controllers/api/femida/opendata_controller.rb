@@ -78,7 +78,7 @@ class Api::Femida::OpendataController < ApplicationController
     opendata.update(status: :started)
     ActiveRecord::Base.connection.execute("TRUNCATE opendata_#{params[:id]}")
     url.sub!('opendata', 'storage/opendata') if params[:id] == 'customs92'
-    file = get(url + '/' + filename)
+    file = get(filename)
 
     case filename.split('.').last
     when 'xml'
@@ -156,7 +156,7 @@ class Api::Femida::OpendataController < ApplicationController
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
     else
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
-    end.compact.find { |x| x[:key] =~ /(URL)/ }[:value].split("/").last
+    end.compact.find { |x| x[:key] =~ /(URL)/ }[:value]
   end
 
   def parse(entry, stream: true)
