@@ -8,6 +8,8 @@ class Api::Femida::OpendataController < ApplicationController
   URL2 = 'https://fsrar.gov.ru/opendata/7710747640-'
   URL3 = 'https://rosstat.gov.ru/opendata/7708234640-'
   URL4 = 'https://opendata.fssp.gov.ru/7709576929-'
+  URL5 = 'https://customs.gov.ru/opendata/7730176610-'
+  URL6 = 'https://nalog.gov.ru/opendata/7707329152-'
   URLS = {
     'rkn2'        => 'LicComm',
     'rkn3'        => 'ResolutionSMI',
@@ -28,7 +30,13 @@ class Api::Femida::OpendataController < ApplicationController
     'rosstat2013' => 'bdboo2013',
     'rosstat2012' => 'bdboo2012',
     'fssp6'       => 'iplegallist',
-    'fssp7'       => 'iplegallistcomplete',
+    'customs92'   => 'vvozavtoru',
+    'nalog72'     => 'snr',
+    'nalog73'     => 'kgn',
+    'nalog76'     => 'paytax',
+    'nalog77'     => 'debtam',
+    'nalog78'     => 'taxoffence',
+    'nalog86'     => 'rsmp',
   }.freeze
 
   api :GET, '/opendata', 'opendata'
@@ -62,14 +70,16 @@ class Api::Femida::OpendataController < ApplicationController
     @klass = "Opendata::#{params[:id].capitalize}".constantize
     @opendata = @klass.new.attributes.to_h
     @opendata.delete('id')
-    url = select_url(params[:id]) + URLS[params[:id]]
     opendata = Opendata.find_by(number: params[:id], deleted_at: nil)
     render status: :ok, json: { status: :already_finished } and return if opendata.status == 'finished'
 
+    url = select_url(params[:id]) + URLS[params[:id]]
     filename = opendata.filename || get_filename(params[:id], url)
     opendata.update(status: :started)
     ActiveRecord::Base.connection.execute("TRUNCATE opendata_#{params[:id]}")
+    url.sub!('opendata', 'storage/opendata') if params[:id] == 'customs92'
     file = get(url + '/' + filename)
+
     case filename.split('.').last
     when 'xml'
       size = parse(file, stream: false)
@@ -80,11 +90,15 @@ class Api::Femida::OpendataController < ApplicationController
       File.binwrite(path, file)
       Zip::File.open(path) do |zip_file|
         size = zip_file.sum do |entry|
+          next if entry.size == 0
+
           case params[:id]
           when 'rkn6'     then parse_by_line(entry)
-          when 'fsrar'    then parse_by_line(entry, 'row')
+          when /^fsrar/   then parse_by_line(entry, 'row')
           when /^rosstat/ then parse_csv_file(entry)
           when /^rkn/     then parse(entry)
+          when /^customs/ then parse_csv_file(entry)
+          when /^nalog/   then parse_by_line(entry, 'Документ')
           else parse(entry)
           end
         end
@@ -103,13 +117,15 @@ class Api::Femida::OpendataController < ApplicationController
     array = []
     if stream
       file.get_input_stream.each("\n") do |row|
-        z = row.force_encoding('windows-1251').chomp.split(';')
+        z = row.force_encoding('windows-1251').chomp.split(";")
         array << { name: z[0], okpo: z[1], okopf: z[2], okfs: z[3], okved: z[4], inn: z[5], measure: z[6], type: z[7] }
       end
     else
       file.body.each_line do |row|
-        z = CSV.parse(row)[0]
-        hash = @opendata
+        # z = CSV.parse(row)[0]
+        z = row.chomp.force_encoding('windows-1251').split(";")
+        z.shift if @klass.name == 'Opendata::Customs92'
+        hash = @opendata.dup
         hash.keys.each_with_index { |name, index| hash[name] = z[index] }
         array << hash
       end
@@ -125,8 +141,8 @@ class Api::Femida::OpendataController < ApplicationController
 
   def get_filename(id, url)
     parsed_data = Nokogiri::HTML.parse(get(url))
-    list = case id
-    when 'fsrar'
+    case id
+    when  /^fsrar/
       parsed_data.css('table.sticky-enabled tr')[1..].map { |x| { key: x.children[0].text, value: x.children[1].text } }
     when /^rosstat/
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
@@ -134,16 +150,20 @@ class Api::Femida::OpendataController < ApplicationController
       parsed_data.css('table.b-table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } if x.children[5] }
     when /^rkn/
       parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
+    when /^customs/
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
+    when /^nalog/
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
     else
-    end.compact
-    list.find { |x| x[:key] == 'Гиперссылка (URL) на набор' }[:value].split("/").last
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
+    end.compact.find { |x| x[:key] =~ /(URL)/ }[:value].split("/").last
   end
 
   def parse(entry, stream: true)
     array = []
     Nokogiri::XML.parse(stream ? entry.get_input_stream.read : entry)
                  .xpath("//rkn:register/rkn:#{params[:id] == '18' ? 'expert' : 'record'}").each do |x|
-      hash = @opendata
+      hash = @opendata.dup
       x.children.each { |ch| hash[ch.name] = ch.text.chomp if @opendata.keys.include?(ch.name) }
       array << hash
     end
@@ -154,10 +174,12 @@ class Api::Femida::OpendataController < ApplicationController
   def parse_by_line(entry, attr = 'rkn:record')
     array = []
     size = 0
+    byebug
     entry.get_input_stream.each("</#{attr}>") do |raw_line|
       record = "<#{attr}>" + raw_line.split("<#{attr}").last.delete("\r\n\t")
-      hash = @opendata
+      hash = @opendata.dup
       attrs = Nokogiri::XML.parse(record).children[0].children
+      byebug
       array << (attr == 'rkn:record' ? attrs_record(attrs, hash) : attrs_row(attrs, hash))
       if array.size == SIZE
         insert(array)
@@ -177,7 +199,7 @@ class Api::Femida::OpendataController < ApplicationController
   end
 
   def attrs_row(attrs, hash)
-    @opendata.keys[1..].each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1]&.text }
+    @opendata.keys.each_with_index { |name, index| hash.send :'[]=', name, attrs[index]&.text }
     hash
   end
 
@@ -188,9 +210,11 @@ class Api::Femida::OpendataController < ApplicationController
   def select_url(key)
     case key
     when /^rkn/     then URL1
-    when 'fsrar'    then URL2
+    when /^fsrar/   then URL2
     when /^rosstat/ then URL3
     when /^fssp/    then URL4
+    when /^customs/ then URL5
+    when /^nalog/   then URL6
     else                 URL1
     end
   end

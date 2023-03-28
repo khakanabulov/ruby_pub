@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_28_080177) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,6 +106,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.datetime "deleted_at"
   end
 
+  create_table "opendata_customs92", force: :cascade do |t|
+    t.string "vehicle_vin"
+    t.string "start_date"
+    t.string "vehicle_from_country"
+    t.string "vehicle_from_country_naim"
+    t.string "vehicle_body_number"
+    t.string "vehicle_chassis_number"
+  end
+
   create_table "opendata_fsrar", force: :cascade do |t|
     t.string "name"
     t.string "inn"
@@ -171,6 +180,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_22_070007) do
     t.string "departments_address"
     t.string "debtor_tin"
     t.string "tin_collector"
+  end
+
+  create_table "opendata_nalog77", force: :cascade do |t|
+    t.string "name"
   end
 
   create_table "opendata_rkn10", force: :cascade do |t|
