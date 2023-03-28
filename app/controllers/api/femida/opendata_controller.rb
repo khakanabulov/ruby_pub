@@ -151,7 +151,7 @@ class Api::Femida::OpendataController < ApplicationController
     when /^rkn/
       parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } }
     when /^customs/
-      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } }
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: url.sub('opendata', 'storage/opendata') + '/' + x.children[5].text.delete("\r\n\t\s") } }
     when /^nalog/
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
     else
