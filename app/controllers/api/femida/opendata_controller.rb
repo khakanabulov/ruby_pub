@@ -174,12 +174,10 @@ class Api::Femida::OpendataController < ApplicationController
   def parse_by_line(entry, attr = 'rkn:record')
     array = []
     size = 0
-    byebug
     entry.get_input_stream.each("</#{attr}>") do |raw_line|
       record = "<#{attr}>" + raw_line.split("<#{attr}").last.delete("\r\n\t")
       hash = @opendata.dup
       attrs = Nokogiri::XML.parse(record).children[0].children
-      byebug
       array << (attr == 'rkn:record' ? attrs_record(attrs, hash) : attrs_row(attrs, hash))
       if array.size == SIZE
         insert(array)
@@ -199,7 +197,7 @@ class Api::Femida::OpendataController < ApplicationController
   end
 
   def attrs_row(attrs, hash)
-    @opendata.keys.each_with_index { |name, index| hash.send :'[]=', name, attrs[index]&.text }
+    @opendata.keys.each_with_index { |name, index| hash.send :'[]=', name, attrs[index+1]&.text }
     hash
   end
 
