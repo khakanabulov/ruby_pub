@@ -30,6 +30,7 @@ class Api::Femida::OpendataController < ApplicationController
     'rosstat2013' => 'bdboo2013',
     'rosstat2012' => 'bdboo2012',
     'fssp6'       => 'iplegallist',
+    'fssp7'       => 'iplegallistcomplete',
     'customs92'   => 'vvozavtoru',
     'nalog72'     => 'snr',
     'nalog73'     => 'kgn',
@@ -43,7 +44,6 @@ class Api::Femida::OpendataController < ApplicationController
   def index
     URLS.each do |key, value|
       filename = get_filename(key, select_url(key) + value)
-
       opendata = Opendata.find_by(number: key, deleted_at: nil)
       if opendata
         if opendata.filename == filename
@@ -141,22 +141,23 @@ class Api::Femida::OpendataController < ApplicationController
 
   def get_filename(id, url)
     parsed_data = Nokogiri::HTML.parse(get(url))
-    case id
+    z = case id
     when  /^fsrar/
       parsed_data.css('table.sticky-enabled tr')[1..].map { |x| { key: x.children[0].text, value: x.children[1].text } }
     when /^rosstat/
-      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } }
     when /^fssp/
-      parsed_data.css('table.b-table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } if x.children[5] }
+      parsed_data.css('table.b-table tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } if x.children[5] }
     when /^rkn/
-      parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text } }
+      parsed_data.css('table.TblList tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } }
     when /^customs/
-      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s") } }
+      parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: url + '/' + x.children[5].text.delete("\r\n\t\s") } }
     when /^nalog/
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
     else
       parsed_data.css('table tr')[1..].map { |x| { key: x.children[3].text, value: x.children[5].text.delete("\r\n\t\s")  } }
-    end.compact.find { |x| x[:key] =~ /(URL)/ }[:value]
+    end.compact
+    z.find { |x| x[:key] =~ /(URL)/ }[:value]
   end
 
   def parse(entry, stream: true)
