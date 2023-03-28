@@ -25,7 +25,7 @@ class Api::Femida::NalogController < ApplicationController
   private
 
   def load
-    RestClient.post('https://pb.nalog.ru/search-proc.json', "mode=search-all&queryAll=#{params[:id]}&queryUl=&okvedUl=&statusUl=&regionUl=&isMspUl=&mspUl1=1&mspUl2=2&mspUl3=3&queryIp=&okvedIp=&statusIp=&regionIp=&isMspIp=&mspIp1=1&mspIp2=2&mspIp3=3&uprType1=1&uprType0=1&ogrFl=1&ogrUl=1&npTypeDoc=1")
+    RestClient::Request.execute(url: 'https://pb.nalog.ru/search-proc.json', payload: "mode=search-all&queryAll=#{params[:id]}&queryUl=&okvedUl=&statusUl=&regionUl=&isMspUl=&mspUl1=1&mspUl2=2&mspUl3=3&queryIp=&okvedIp=&statusIp=&regionIp=&isMspIp=&mspIp1=1&mspIp2=2&mspIp3=3&uprType1=1&uprType0=1&ogrFl=1&ogrUl=1&npTypeDoc=1", method: :post, verify_ssl: false)
   end
 
   def transform(key, data)

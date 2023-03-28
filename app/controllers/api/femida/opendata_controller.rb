@@ -38,6 +38,7 @@ class Api::Femida::OpendataController < ApplicationController
     'nalog77'     => 'debtam',
     'nalog78'     => 'taxoffence',
     'nalog86'     => 'rsmp',
+    'nalog27'     => 'disqualifiedpersons', # TODO
   }.freeze
 
   api :GET, '/opendata', 'opendata'
@@ -77,7 +78,6 @@ class Api::Femida::OpendataController < ApplicationController
     filename = opendata.filename || get_filename(params[:id], url)
     opendata.update(status: :started)
     ActiveRecord::Base.connection.execute("TRUNCATE opendata_#{params[:id]}")
-    url.sub!('opendata', 'storage/opendata') if params[:id] == 'customs92'
     file = get(filename)
 
     case filename.split('.').last
@@ -163,7 +163,7 @@ class Api::Femida::OpendataController < ApplicationController
   def parse(entry, stream: true)
     array = []
     Nokogiri::XML.parse(stream ? entry.get_input_stream.read : entry)
-                 .xpath("//rkn:register/rkn:#{params[:id] == '18' ? 'expert' : 'record'}").each do |x|
+                 .xpath("//rkn:register/rkn:#{params[:id] == 'rkn18' ? 'expert' : 'record'}").each do |x|
       hash = @opendata.dup
       x.children.each { |ch| hash[ch.name] = ch.text.chomp if @opendata.keys.include?(ch.name) }
       array << hash
