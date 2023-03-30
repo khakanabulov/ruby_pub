@@ -11,11 +11,18 @@ Rails.application.routes.draw do
       resources :inn,     only: :show
       resources :debtors, only: :show
       resources :fsin,    only: :show
-      resources :nalog,   only: :show
       resources :egrul,   only: :show
       resources :arbitr,  only: :show
       resources :npd,     only: :show
       resources :bankrot, only: :show
+      resources :nalog,   only: :show do
+        collection do
+          get :ogr
+          get :uchr
+          get :ip
+          get :rdl
+        end
+      end
       resources :opendata,only: [:index, :show]
       resources :driver,  only: :index
       resources :sro,     only: :index
