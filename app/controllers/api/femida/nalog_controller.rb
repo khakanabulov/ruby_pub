@@ -14,7 +14,9 @@ class Api::Femida::NalogController < ApplicationController
     d = search_proc(hash)
     data = d['ogrfl']['data'] + d['ogrul']['data']
     render status: :ok, json: { data: data, company: company_proc(data) }
-    # {"success":0,"limit_org":[{"name":"","inn":"","position":"","reason":"","start_date":"","end_date":"","org_name":"","org_inn":""}],"error":""}
+    # {"success":0,
+    # "limit_org":[{"name":"","inn":"","position":"","reason":"","start_date":"","end_date":"","org_name":"","org_inn":""}],
+    # "error":""}
   end
 
   api :GET, '/nalog/uchr?id=:inn', 'Проверка на учредителей и гендиректоров' # 502419236001
@@ -34,19 +36,40 @@ class Api::Femida::NalogController < ApplicationController
       x['ul']['data']
     end.compact.flatten
     render status: :ok, json: { data: data, resp: resp, company: company_proc(resp, hash[:pbCaptchaToken]) }
-    # {"success":0,"director":[{"inn":"","name":"","count":0}],"owner":[{"inn":"","name":"","count":0}],"error":""}
+    # {"success":0,
+    # "director":[{"inn":"","name":"","count":0}],"owner":[{"inn":"","name":"","count":0}],
+    # "error":""}
   end
 
   api :GET, '/nalog/ip?id=:inn', 'Проверка на ИП' # 772830410106
   def ip
+    hash = captcha_proc
+    hash[:mode] = 'search-ip'
+    hash[:queryIp] = params[:id]
+    hash[:uprType0] = 1
+    hash[:uprType1] = 1
+    data = search_proc(hash)['ip']['data']
+    render status: :ok, json: { data: data, company: company_proc(data) }
 
-    # {"success":0,"ip":[{"ogrn":"","okved":"","okved_name":"","name":""}],"error":""}
+    # {"success":0,"ip":[
+    # {"ogrn":"","okved":"","okved_name":"","name":""}
+    # ],"error":""}
   end
 
-  api :GET, '/nalog/rdl?id=:inn', 'Проверка на дисквалификацию' # 5205037677
+  api :GET, '/nalog/rdl?fio=:fio&birthday=31.12.1999', 'Проверка на дисквалификацию' # 5205037677
   def rdl
+    hash = captcha_proc
+    hash[:mode] = 'search-rdl'
+    hash[:queryRdl] = params[:fio]
+    hash[:dateRdl] = params[:birthday]
+    hash[:uprType0] = 1
+    hash[:uprType1] = 1
+    data = search_proc(hash)['rdl']['data']
+    render status: :ok, json: { data: data }
 
-    # {"success":0,"dis":[{"number":"","name":"","date_of_birth":"","place_of_birth":"","name_org":"","position":"","article":"","creator":"","court":"","period":"","start_date":"","end_date":""}],"error":""}
+    # {"success":0,"dis":[
+    # {"number":"","name":"","date_of_birth":"","place_of_birth":"","name_org":"","position":"","article":"","creator":"","court":"","period":"","start_date":"","end_date":""}
+    # ],"error":""}
   end
 
   private
