@@ -3,6 +3,7 @@
 class Api::Femida::NalogController < ApplicationController
   protect_from_forgery with: :null_session
 
+  HOST = 'https://pb.nalog.ru/'
   RETRY = 5
 
   api :GET, '/nalog/ogr?id=:inn', 'Проверка на ограничение' # 668608997290
@@ -50,60 +51,56 @@ class Api::Femida::NalogController < ApplicationController
 
   private
 
-  def company_proc(array, pbCaptchaToken = nil)
+  def company_proc(array, pb = nil)
     array.map do |z|
       hash = { token: z['token'], method: 'get-request' }
-      hash[:pbCaptchaToken] = pbCaptchaToken if pbCaptchaToken
-      resp = load_retry('https://pb.nalog.ru/company-proc.json', prepare_hash(hash))
-      next if resp.nil?
+      hash[:pbCaptchaToken] = pb if pb
+      x = load_retry(:company, hash)
+      next if x.nil?
 
-      x = JSON.parse(resp)
       hash = { token: x['token'], id: x['id'], method: 'get-response' }
-
-      JSON.parse(load_retry('https://pb.nalog.ru/company-proc.json', prepare_hash(hash)))
+      load_retry(:company, hash)
     end.compact
   end
 
   def search_proc(hash)
     hash[:ogrFl] = 1
     hash[:ogrUl] = 1
-    JSON.parse(load_retry('https://pb.nalog.ru/search-proc.json', prepare_hash(hash)))
-  end
-
-  def prepare_hash(hash)
-    hash.map { |key, value| "#{key}=#{value}" }.join("&")
+    load_retry(:search, hash)
   end
 
   def captcha_proc
-    z = RestClient.get('https://pb.nalog.ru/static/captcha.bin?version=2').body
-    capcha = RestClient.get("https://pb.nalog.ru/static/captcha.bin?version=2&a=#{z}")
-    @resp = post_rucaptcha(Base64.encode64(capcha.body), phrase: 0, regsense: 0, numeric: 1, language: 0)
+    z = RestClient.get("#{HOST}static/captcha.bin?version=2").body
+    captcha = RestClient.get("#{HOST}static/captcha.bin?version=2&a=#{z}")
+    @resp = post_rucaptcha(Base64.encode64(captcha.body), phrase: 0, regsense: 0, numeric: 1, language: 0)
     return if @resp == ApplicationController::ERROR
 
-    proc = load_retry('https://pb.nalog.ru/captcha-proc.json', "captcha=#{@resp.split('|').last}&captchaToken=#{z}")
-    proc = proc.delete("\"") if proc
-
-    { pbCaptchaToken: proc, token: z }
+    captcha = load_retry(:captcha, { captcha: @resp.split('|').last, captchaToken: z })
+    { pbCaptchaToken: captcha, token: z }
   end
 
-  def load_retry(url, payload)
-    puts "--------------------------------------------------------- >>"
-    puts "#{url} => #{payload}"
+  def load_retry(url, hash)
+    puts "--------------------------------------------------------- => #{url}"
+    puts hash
 
     x = 0
     resp = nil
     while x < RETRY
       x += 1
-      resp = load(url, payload)
+      resp = load(url, hash)
       resp.nil? ? sleep(1.second) : (x = RETRY)
     end
-    puts "--------------------------------------------------------- <<"
-    puts resp
-    resp
+    puts "\n <= ..... #{resp}"
+    JSON.parse(resp) if resp.present?
   end
 
-  def load(url, payload)
-    RestClient::Request.execute(url: url, payload: payload, method: :post, verify_ssl: false).body
+  def load(url, hash = {})
+    RestClient::Request.execute(
+      url: "#{HOST}#{url}-proc.json",
+      payload: hash.map { |key, value| "#{key}=#{value}" }.join("&"),
+      method: :post,
+      verify_ssl: false
+    ).body
     rescue Errno::ECONNRESET, RestClient::BadRequest
   end
 end
