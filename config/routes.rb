@@ -8,7 +8,6 @@ Rails.application.routes.draw do
   resources :users
   namespace :api do
     namespace :femida do
-      resources :inn,     only: :show
       resources :debtors, only: :show
       resources :fsin,    only: :show
       resources :egrul,   only: :show
@@ -23,6 +22,7 @@ Rails.application.routes.draw do
           get :rdl
         end
       end
+      resources :inn,     only: [:index, :show]
       resources :opendata,only: [:index, :show]
       resources :driver,  only: :index
       resources :sro,     only: :index
