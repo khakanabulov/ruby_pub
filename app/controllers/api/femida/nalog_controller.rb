@@ -80,6 +80,7 @@ class Api::Femida::NalogController < ApplicationController
     hash[:dateRdl] = params[:birthday]
     hash[:uprType0] = 1
     hash[:uprType1] = 1
+    data = search_proc(hash)['rdl']['data']
     # { data: data }
     render status: :ok, json: { success: true, error: '',
       dis: data.map do |d|
