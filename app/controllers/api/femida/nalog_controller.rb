@@ -13,10 +13,21 @@ class Api::Femida::NalogController < ApplicationController
     hash[:queryOgr] = params[:id]
     d = search_proc(hash)
     data = d['ogrfl']['data'] + d['ogrul']['data']
-    render status: :ok, json: { data: data, company: company_proc(data) }
-    # {"success":0,
-    # "limit_org":[{"name":"","inn":"","position":"","reason":"","start_date":"","end_date":"","org_name":"","org_inn":""}],
-    # "error":""}
+    # { data: data, company: company_proc(data) }
+    render status: :ok, json: { success: true, error: '',
+      limit_org: data.map do |d|
+        {
+          name: d['ogr_name'],
+          inn: d['ogr_inn'],
+          position: d['rel'],
+          reason: d['ogr'],
+          start_date: d['dtstart'],
+          end_date: d['dtend'],
+          org_name: d['ul_name'],
+          org_inn: d['ul_inn']
+        }
+      end
+    }
   end
 
   api :GET, '/nalog/uchr?id=:inn', 'Проверка на учредителей и гендиректоров' # 502419236001
@@ -26,19 +37,23 @@ class Api::Femida::NalogController < ApplicationController
     hash[:queryUpr] = params[:id]
     hash[:uprType0] = 1
     hash[:uprType1] = 1
-    d = search_proc(hash)
-    data = d['uchr']['data'] + d['upr']['data']
-    resp = data.map do |z|
-      hash = { pbCaptchaToken: hash[:pbCaptchaToken], token: z['token'], mode: 'search-ul', queryUpr: z['inn'] }
-      x = search_proc(hash)
-      next unless x
-
-      x['ul']['data']
-    end.compact.flatten
-    render status: :ok, json: { data: data, resp: resp, company: company_proc(resp, hash[:pbCaptchaToken]) }
-    # {"success":0,
-    # "director":[{"inn":"","name":"","count":0}],"owner":[{"inn":"","name":"","count":0}],
-    # "error":""}
+    data = search_proc(hash)
+    # resp = data.map do |z|
+    #   hash = { pbCaptchaToken: hash[:pbCaptchaToken], token: z['token'], mode: 'search-ul', queryUpr: z['inn'] }
+    #   x = search_proc(hash)
+    #   next unless x
+    #
+    #   x['ul']['data']
+    # end.compact.flatten
+    # { data: data, resp: resp, company: company_proc(resp, hash[:pbCaptchaToken]) }
+    render status: :ok, json: { success: true, error: '',
+      director: data['upr']['data'].map do |d|
+        { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
+      end,
+      owner: data['uchr']['data'].map do |d|
+        { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
+      end
+    }
   end
 
   api :GET, '/nalog/ip?id=:inn', 'Проверка на ИП' # 772830410106
@@ -49,14 +64,15 @@ class Api::Femida::NalogController < ApplicationController
     hash[:uprType0] = 1
     hash[:uprType1] = 1
     data = search_proc(hash)['ip']['data']
-    render status: :ok, json: { data: data, company: company_proc(data) }
-
-    # {"success":0,"ip":[
-    # {"ogrn":"","okved":"","okved_name":"","name":""}
-    # ],"error":""}
+    # { data: data, company: company_proc(data) }
+    render status: :ok, json: { success: true, error: '',
+      ip: data.map do |d|
+        { ogrn: d['ogrn'], okved: d['okved2'], okved_name: d['okved2name'], name: d['namec'] }
+      end
+    }
   end
 
-  api :GET, '/nalog/rdl?fio=:fio&birthday=31.12.1999', 'Проверка на дисквалификацию' # 5205037677
+  api :GET, '/nalog/rdl?fio=:fio&birthday=31.12.1999', 'Проверка на дисквалификацию'
   def rdl
     hash = captcha_proc
     hash[:mode] = 'search-rdl'
@@ -64,12 +80,25 @@ class Api::Femida::NalogController < ApplicationController
     hash[:dateRdl] = params[:birthday]
     hash[:uprType0] = 1
     hash[:uprType1] = 1
-    data = search_proc(hash)['rdl']['data']
-    render status: :ok, json: { data: data }
-
-    # {"success":0,"dis":[
-    # {"number":"","name":"","date_of_birth":"","place_of_birth":"","name_org":"","position":"","article":"","creator":"","court":"","period":"","start_date":"","end_date":""}
-    # ],"error":""}
+    # { data: data }
+    render status: :ok, json: { success: true, error: '',
+      dis: data.map do |d|
+        {
+          number: d['nomzap'],
+          name: d['namefl'],
+          date_of_birth: d['datarozhd'],
+          place_of_birth: d['mestorozhd'],
+          name_org: d['naimorg'],
+          position: d['dolzhnost'],
+          article: d['svednarush'],
+          creator: "#{d['dolzhnsud']} #{d['namesud']}",
+          court: d['naimorgprot'],
+          period: d['diskvsr'],
+          start_date: d['datanachdiskv'],
+          end_date: d['datakondiskv']
+        }
+      end
+    }
   end
 
   private
