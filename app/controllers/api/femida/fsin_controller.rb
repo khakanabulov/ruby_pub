@@ -5,6 +5,6 @@ class Api::Femida::FsinController < ApplicationController
 
   api :GET, '/fsin/:fio', 'Проверка ФСИН (РОЗЫСК) - json array: [{"fio": "", "dt": ""}] (https://limited.fsin.gov.ru/criminal/)'
   def show
-    render status: :ok, json: FsinService.new(params[:id]).call
+    with_error_handling { FsinService.new(params[:id]).call }
   end
 end

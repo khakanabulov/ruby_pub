@@ -5,7 +5,11 @@ class Api::Femida::WebsborController < ApplicationController
 
   api :GET, '/websbor?inn=1&okpo=2&ogrn=3', 'Проверка  (https://websbor.gks.ru)'
   def index
-    json = JSON.parse RestClient.post('https://websbor.gks.ru/webstat/api/gs/organizations', okpo: params[:okpo], inn: params[:inn], ogrn: params[:ogrn])
-    render status: :ok, json: json
+    with_error_handling do
+      JSON.parse RestClient.post(
+        'https://websbor.gks.ru/webstat/api/gs/organizations',
+        okpo: params[:okpo], inn: params[:inn], ogrn: params[:ogrn]
+      )
+    end
   end
 end

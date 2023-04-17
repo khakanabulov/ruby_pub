@@ -5,11 +5,12 @@ class Api::Femida::DriverController < ApplicationController
 
   api :GET, '/driver?', 'Проверка водителя'
   def index
-    capcha = JSON.parse RestClient.get('https://check.gibdd.ru/captcha')
-    resp = post_rucaptcha(capcha['base64jpg'])
-    string = "num=#{params[:num]}&date=#{params[:date]}&captchaWord=#{resp.body.split('|').last}&captchaToken=#{capcha['token']}"
-    driver = JSON.parse RestClient.post('https://xn--b1afk4ade.xn--90adear.xn--p1ai/proxy/check/driver', string)
-    render status: :ok, json: driver
+    with_error_handling do
+      capcha = JSON.parse RestClient.get('https://check.gibdd.ru/captcha')
+      resp = post_rucaptcha(capcha['base64jpg'])
+      string = "num=#{params[:num]}&date=#{params[:date]}&captchaWord=#{resp.body.split('|').last}&captchaToken=#{capcha['token']}"
+      JSON.parse RestClient.post('https://xn--b1afk4ade.xn--90adear.xn--p1ai/proxy/check/driver', string)
+    end
   end
 
   def kbm

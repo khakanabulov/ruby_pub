@@ -8,11 +8,12 @@ class Api::Femida::BankrotController < ApplicationController
 
   api :GET, '/bankrot/:inn', ''
   def show
-    data = get('cmpbankrupts')['pageData'] + get('prsnbankrupts')['pageData']
-    infos = data.map { |x| get_info_by(x['guid']) }
-    publications = data.map { |x| get_by(x['guid'])['pageData'] }
-
-    render status: :ok, json: { data: data, infos: infos, publications: publications }
+    with_error_handling do
+      data = get('cmpbankrupts')['pageData'] + get('prsnbankrupts')['pageData']
+      infos = data.map { |x| get_info_by(x['guid']) }
+      publications = data.map { |x| get_by(x['guid'])['pageData'] }
+      { data: data, infos: infos, publications: publications }
+    end
   end
 
   private

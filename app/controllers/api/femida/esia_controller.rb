@@ -10,16 +10,18 @@ class Api::Femida::EsiaController < ApplicationController
 
   api :GET, "/esia?phone=79991112233&passport=1234567890&email=mail@example.com&inn=111222333444&snils=111222333444&inn=111222333444", 'Проверка ЕСИА'
   def index
-    json = {}
-    req_id = nil
-    hash.each do |key, value|
-      z1 = get("/esia-rs/#{PATH}/recovery/find?#{value}&verifyToken=#{@token}", key: key)
-      req_id ||= z1['requestId']
-      json.merge!( key => (z1['description'] == 'Найдена стандартная/подтвержденная УЗ' && z1['status'] == 2))
-      z2 = get("/esia-rs/#{PATH}/recovery/find?#{value}&requestId=#{req_id}", headers: @headers, key: key)
-      json.merge!( "#{key}_info" => z2)
+    with_error_handling do
+      json = {}
+      req_id = nil
+      hash.each do |key, value|
+        z1 = get("/esia-rs/#{PATH}/recovery/find?#{value}&verifyToken=#{@token}", key: key)
+        req_id ||= z1['requestId']
+        json.merge!( key => (z1['description'] == 'Найдена стандартная/подтвержденная УЗ' && z1['status'] == 2))
+        z2 = get("/esia-rs/#{PATH}/recovery/find?#{value}&requestId=#{req_id}", headers: @headers, key: key)
+        json.merge!( "#{key}_info" => z2)
+      end
+      json
     end
-    render status: :ok, json: json
   end
 
   api :GET, "/esia/passport?str=1234567890", 'Проверка по номеру паспорта'
@@ -42,10 +44,12 @@ class Api::Femida::EsiaController < ApplicationController
   def get_esia
     (render(status: :ok, json: @resp) and return) if @token.nil?
 
-    resp = get("/esia-rs/#{PATH}/recovery/find?#{hash_action}&verifyToken=#{@token}")
-    resp1 = { response: (resp['description'] == 'Найдена стандартная/подтвержденная УЗ' && resp['status'] == 2) }
-    resp2 = get("/esia-rs/#{PATH}/recovery/find?#{hash_action}&requestId=#{resp['requestId']}", headers: @headers)
-    render status: :ok, json: resp2[:str] == false ? resp1 : resp1.merge(resp2)
+    with_error_handling do
+      resp = get("/esia-rs/#{PATH}/recovery/find?#{hash_action}&verifyToken=#{@token}")
+      resp1 = { response: (resp['description'] == 'Найдена стандартная/подтвержденная УЗ' && resp['status'] == 2) }
+      resp2 = get("/esia-rs/#{PATH}/recovery/find?#{hash_action}&requestId=#{resp['requestId']}", headers: @headers)
+      resp2[:str] == false ? resp1 : resp1.merge(resp2)
+    end
   end
 
   def get_token

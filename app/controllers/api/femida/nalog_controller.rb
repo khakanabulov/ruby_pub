@@ -8,98 +8,110 @@ class Api::Femida::NalogController < ApplicationController
 
   api :GET, '/nalog/ogr?id=:inn', 'Проверка на ограничение' # 668608997290
   def ogr
-    hash = captcha_proc
-    hash[:mode] = 'search-ogr'
-    hash[:queryOgr] = params[:id]
-    d = search_proc(hash)
-    data = d['ogrfl']['data'] + d['ogrul']['data']
-    # { data: data, company: company_proc(data) }
-    render status: :ok, json: { success: true, error: '',
-      limit_org: data.map do |d|
-        {
-          name: d['ogr_name'],
-          inn: d['ogr_inn'],
-          position: d['rel'],
-          reason: d['ogr'],
-          start_date: d['dtstart'],
-          end_date: d['dtend'],
-          org_name: d['ul_name'],
-          org_inn: d['ul_inn']
-        }
-      end
-    }
+    with_error_handling do
+      hash = captcha_proc
+      hash[:mode] = 'search-ogr'
+      hash[:queryOgr] = params[:id]
+      d = search_proc(hash)
+      data = d['ogrfl']['data'] + d['ogrul']['data']
+      # { data: data, company: company_proc(data) }
+      {
+        success: true, error: '',
+        limit_org: data.map do |d|
+          {
+            name: d['ogr_name'],
+            inn: d['ogr_inn'],
+            position: d['rel'],
+            reason: d['ogr'],
+            start_date: d['dtstart'],
+            end_date: d['dtend'],
+            org_name: d['ul_name'],
+            org_inn: d['ul_inn']
+          }
+        end
+      }
+    end
   end
 
   api :GET, '/nalog/uchr?id=:inn', 'Проверка на учредителей и гендиректоров' # 502419236001
   def uchr
-    hash = captcha_proc
-    hash[:mode] = 'search-upr-uchr'
-    hash[:queryUpr] = params[:id]
-    hash[:uprType0] = 1
-    hash[:uprType1] = 1
-    data = search_proc(hash)
-    # resp = data.map do |z|
-    #   hash = { pbCaptchaToken: hash[:pbCaptchaToken], token: z['token'], mode: 'search-ul', queryUpr: z['inn'] }
-    #   x = search_proc(hash)
-    #   next unless x
-    #
-    #   x['ul']['data']
-    # end.compact.flatten
-    # { data: data, resp: resp, company: company_proc(resp, hash[:pbCaptchaToken]) }
-    render status: :ok, json: { success: true, error: '',
-      director: data['upr']['data'].map do |d|
-        { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
-      end,
-      owner: data['uchr']['data'].map do |d|
-        { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
-      end
-    }
+    with_error_handling do
+      hash = captcha_proc
+      hash[:mode] = 'search-upr-uchr'
+      hash[:queryUpr] = params[:id]
+      hash[:uprType0] = 1
+      hash[:uprType1] = 1
+      data = search_proc(hash)
+      # resp = data.map do |z|
+      #   hash = { pbCaptchaToken: hash[:pbCaptchaToken], token: z['token'], mode: 'search-ul', queryUpr: z['inn'] }
+      #   x = search_proc(hash)
+      #   next unless x
+      #
+      #   x['ul']['data']
+      # end.compact.flatten
+      # { data: data, resp: resp, company: company_proc(resp, hash[:pbCaptchaToken]) }
+      {
+        success: true, error: '',
+        director: data['upr']['data'].map do |d|
+          { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
+        end,
+        owner: data['uchr']['data'].map do |d|
+          { inn: d['inn'], name: d['name'], count: d['ul_cnt'] }
+        end
+      }
+    end
   end
 
   api :GET, '/nalog/ip?id=:inn', 'Проверка на ИП' # 772830410106
   def ip
-    hash = captcha_proc
-    hash[:mode] = 'search-ip'
-    hash[:queryIp] = params[:id]
-    hash[:uprType0] = 1
-    hash[:uprType1] = 1
-    data = search_proc(hash)['ip']['data']
-    # { data: data, company: company_proc(data) }
-    render status: :ok, json: { success: true, error: '',
-      ip: data.map do |d|
-        { ogrn: d['ogrn'], okved: d['okved2'], okved_name: d['okved2name'], name: d['namec'] }
-      end
-    }
+    with_error_handling do
+      hash = captcha_proc
+      hash[:mode] = 'search-ip'
+      hash[:queryIp] = params[:id]
+      hash[:uprType0] = 1
+      hash[:uprType1] = 1
+      data = search_proc(hash)['ip']['data']
+      # { data: data, company: company_proc(data) }
+      {
+        success: true, error: '',
+        ip: data.map do |d|
+          { ogrn: d['ogrn'], okved: d['okved2'], okved_name: d['okved2name'], name: d['namec'] }
+        end
+      }
+    end
   end
 
   api :GET, '/nalog/rdl?fio=:fio&birthday=31.12.1999', 'Проверка на дисквалификацию'
   def rdl
-    hash = captcha_proc
-    hash[:mode] = 'search-rdl'
-    hash[:queryRdl] = params[:fio]
-    hash[:dateRdl] = params[:birthday]
-    hash[:uprType0] = 1
-    hash[:uprType1] = 1
-    data = search_proc(hash)['rdl']['data']
-    # { data: data }
-    render status: :ok, json: { success: true, error: '',
-      dis: data.map do |d|
-        {
-          number: d['nomzap'],
-          name: d['namefl'],
-          date_of_birth: d['datarozhd'],
-          place_of_birth: d['mestorozhd'],
-          name_org: d['naimorg'],
-          position: d['dolzhnost'],
-          article: d['svednarush'],
-          creator: "#{d['dolzhnsud']} #{d['namesud']}",
-          court: d['naimorgprot'],
-          period: d['diskvsr'],
-          start_date: d['datanachdiskv'],
-          end_date: d['datakondiskv']
-        }
-      end
-    }
+    with_error_handling do
+      hash = captcha_proc
+      hash[:mode] = 'search-rdl'
+      hash[:queryRdl] = params[:fio]
+      hash[:dateRdl] = params[:birthday]
+      hash[:uprType0] = 1
+      hash[:uprType1] = 1
+      data = search_proc(hash)['rdl']['data']
+      # { data: data }
+      {
+        success: true, error: '',
+        dis: data.map do |d|
+          {
+            number: d['nomzap'],
+            name: d['namefl'],
+            date_of_birth: d['datarozhd'],
+            place_of_birth: d['mestorozhd'],
+            name_org: d['naimorg'],
+            position: d['dolzhnost'],
+            article: d['svednarush'],
+            creator: "#{d['dolzhnsud']} #{d['namesud']}",
+            court: d['naimorgprot'],
+            period: d['diskvsr'],
+            start_date: d['datanachdiskv'],
+            end_date: d['datakondiskv']
+          }
+        end
+      }
+    end
   end
 
   private
