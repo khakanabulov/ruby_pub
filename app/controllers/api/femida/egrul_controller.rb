@@ -6,22 +6,24 @@ class Api::Femida::EgrulController < ApplicationController
 
   api :GET, '/egrul/:inn', "Проверка ЕГРЮЛ (#{URL}index.html)"
   def show
-    @errors = []
-    token = begin
-              post_request
-            rescue Errno::ECONNRESET => e
-              post_request
-            end
+    with_error_handling do
+      @inn = check_inn(params[:id])
+      @errors = []
+      token = begin
+                post_request
+              rescue Errno::ECONNRESET => e
+                post_request
+              end
 
-    data = JSON.parse(token)
-    resp = begin
-             get_req('search-result', data['t'])
-           rescue Errno::ECONNRESET => e
-             get_req('search-result', data['t'])
-           end
+      data = JSON.parse(token)
+      resp = begin
+               get_req('search-result', data['t'])
+             rescue Errno::ECONNRESET => e
+               get_req('search-result', data['t'])
+             end
 
-
-    render status: :ok, json: JSON.parse(resp)['rows'].map { |row| transform(row) }
+      JSON.parse(resp)['rows'].map { |row| transform(row) }
+    end
   end
 
   private
@@ -50,6 +52,6 @@ class Api::Femida::EgrulController < ApplicationController
   end
 
   def post_request
-    RestClient.post(URL, "vyp3CaptchaToken=&page=&query=#{params[:id]}&region=&PreventChromeAutocomplete=")
+    RestClient.post(URL, "vyp3CaptchaToken=&page=&query=#{@inn}&region=&PreventChromeAutocomplete=")
   end
 end

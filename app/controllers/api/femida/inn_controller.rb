@@ -29,7 +29,8 @@ class Api::Femida::InnController < ApplicationController
   api :GET, '/inn/:inn', 'Проверка ФЛ на долги - json: {"error": 0, "finesList": [], "count": null, "inGarage": 0} (https://gosnalogi.ru/ajax/taxes_inn)'
   def show
     with_error_handling do
-      json = req("https://gosnalogi.ru/ajax/taxes_inn?inn=#{params[:id]}", {}, method: :get)
+      inn = check_inn(params[:id])
+      json = req("https://gosnalogi.ru/ajax/taxes_inn?inn=#{inn}", {}, method: :get)
       json['error'] = json['error'].to_i
       json
     end

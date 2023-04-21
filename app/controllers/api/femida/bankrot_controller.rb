@@ -9,6 +9,7 @@ class Api::Femida::BankrotController < ApplicationController
   api :GET, '/bankrot/:inn', ''
   def show
     with_error_handling do
+      @inn = check_inn(params[:id])
       data = get('cmpbankrupts')['pageData'] + get('prsnbankrupts')['pageData']
       infos = data.map { |x| get_info_by(x['guid']) }
       publications = data.map { |x| get_by(x['guid'])['pageData'] }
@@ -20,7 +21,7 @@ class Api::Femida::BankrotController < ApplicationController
 
   def get(type)
     JSON.parse RestClient.get(
-      "#{BHOST}/backend/#{type}?searchString=#{params[:id]}&isActiveLegalCase=null&limit=15&offset=0",
+      "#{BHOST}/backend/#{type}?searchString=#{@inn}&isActiveLegalCase=null&limit=15&offset=0",
       'Referer' => BHOST
     )
   end

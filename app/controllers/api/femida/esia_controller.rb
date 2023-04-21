@@ -37,7 +37,12 @@ class Api::Femida::EsiaController < ApplicationController
   def snils;    get_esia; end
 
   api :GET, "/esia/inn?str=111222333444", 'Проверка по ИНН'
-  def inn;      get_esia; end
+  def inn
+    check_inn(params[:str].to_s)
+    get_esia
+  rescue Exception => e
+    render status: :ok, json: { status: false, error: e.message }
+  end
 
   private
 
